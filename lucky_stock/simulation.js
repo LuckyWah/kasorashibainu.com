@@ -26,8 +26,26 @@
     "Return on Invested Capital",
   ];
 
+  function normalizeMoney(value) {
+    return String(value || "").replace(/,/g, "").trim();
+  }
+
+  function formatMoneyInput() {
+    const rawValue = normalizeMoney(totalCashInput.value);
+
+    if (!rawValue || !/^\d+(?:\.\d{0,2})?$/.test(rawValue)) {
+      return;
+    }
+
+    const [whole, decimals] = rawValue.split(".");
+    const formattedWhole = Number(whole).toLocaleString("en-US");
+    totalCashInput.value = decimals !== undefined
+      ? `${formattedWhole}.${decimals}`
+      : formattedWhole;
+  }
+
   function validateTotalCash() {
-    const value = String(totalCashInput.value || "").trim();
+    const value = normalizeMoney(totalCashInput.value);
     const isMoney = /^\d+(?:\.\d{1,2})?$/.test(value);
     const amount = Number(value);
 
@@ -147,7 +165,7 @@
       ? `$${differenceText} more than DCA`
       : `$${differenceText} less than DCA`;
 
-    outcome.textContent = `By using Lucky Stock for daily investment in ${data.ticker} from ${formatDisplayDate(data.startDate)} to ${formatDisplayDate(data.endDate)}, the simulated final value would be $${Number(data.toolFinalValue).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}, ${comparisonText}.`;
+    outcome.textContent = `By using Lucky Stock for daily investment in ${data.ticker} from ${formatDisplayDate(data.startDate)} to ${formatDisplayDate(data.endDate)}, your portfolio would grow to $${Number(data.toolFinalValue).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}, ${comparisonText}.`;
     outcome.hidden = false;
 
     const rows = [
@@ -166,6 +184,10 @@
   }
 
   totalCashInput.addEventListener("input", validateTotalCash);
+  totalCashInput.addEventListener("blur", () => {
+    formatMoneyInput();
+    validateTotalCash();
+  });
   startDateInput.addEventListener("input", validateDates);
   endDateInput.addEventListener("input", validateDates);
   strategyMetric.addEventListener("change", updateStrategyMetric);
@@ -185,7 +207,7 @@
       ticker: String(formData.get("ticker") || "").trim().toUpperCase(),
       startDate: String(formData.get("startDate") || ""),
       endDate: String(formData.get("endDate") || ""),
-      totalCash: Number(String(formData.get("totalCash") || "").trim()),
+      totalCash: Number(normalizeMoney(formData.get("totalCash"))),
     };
 
     try {

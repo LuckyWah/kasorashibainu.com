@@ -15,6 +15,11 @@
   box-sizing: border-box;
 }
 
+html {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
 body {
   margin: 0;
   min-height: 100dvh;
@@ -22,6 +27,8 @@ body {
   color: var(--text-primary);
   background: var(--bg-dark);
   line-height: 1.6;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 a {
@@ -120,8 +127,10 @@ a:hover {
 
 /* Main content */
 main {
+  width: 100%;
   max-width: 1200px;
   margin: 0 auto;
+  overflow-x: hidden;
 }
 
 /* Hero Section */
@@ -345,6 +354,8 @@ main {
   padding: 80px clamp(20px, 5vw, 40px);
   border-top: 1px solid var(--border);
   background: rgba(0, 217, 255, 0.03);
+  min-width: 0;
+  overflow-x: hidden;
 }
 
 .section-heading {
@@ -375,6 +386,8 @@ main {
   border: 1px solid var(--border);
   border-radius: 12px;
   background: var(--surface);
+  min-width: 0;
+  max-width: 100%;
 }
 
 .simulation-form label {
@@ -434,9 +447,11 @@ main {
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 12px;
   margin: 0 0 24px;
+  min-width: 0;
 }
 
 .simulation-summary div {
+  min-width: 0;
   padding: 16px;
   border: 1px solid var(--border);
   border-radius: 8px;
@@ -458,6 +473,7 @@ main {
   margin-top: 5px;
   color: var(--text-primary);
   font-size: 1rem;
+  overflow-wrap: anywhere;
 }
 
 .simulation-results[hidden] {
@@ -468,6 +484,7 @@ main {
   display: grid;
   grid-template-columns: 1fr;
   gap: 24px;
+  min-width: 0;
 }
 
 .simulation-outcome {
@@ -481,6 +498,8 @@ main {
   font-size: 1.08rem;
   font-weight: 800;
   line-height: 1.55;
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 
 .simulation-outcome[hidden] {
@@ -529,11 +548,19 @@ main {
 }
 
 .simulation-chart {
+  min-width: 0;
+  max-width: 100%;
   min-height: 420px;
   border: 1px solid var(--border);
   border-radius: 12px;
   background: var(--surface);
   overflow: hidden;
+}
+
+.simulation-chart .js-plotly-plot,
+.simulation-chart .plot-container,
+.simulation-chart .svg-container {
+  max-width: 100%;
 }
 
 /* For Whom Section */
@@ -692,7 +719,7 @@ main {
   .simulation-promo,
   .for-whom,
   .download {
-    padding: 60px clamp(20px, 5vw, 40px);
+    padding: 60px 16px;
   }
 
   .features h2,
@@ -712,6 +739,26 @@ main {
 
   .simulation-form {
     grid-template-columns: 1fr;
+    padding: 16px;
+  }
+
+  .simulation-summary {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .simulation-outcome {
+    padding: 16px;
+    font-size: 1rem;
+  }
+
+  .metric-select-label,
+  .metric-select-label select {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .simulation-chart {
+    min-height: 360px;
   }
 }
 
