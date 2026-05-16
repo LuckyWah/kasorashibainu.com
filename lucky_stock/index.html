@@ -21,6 +21,7 @@
       <nav class="nav" aria-label="Lucky Stock navigation">
         <a href="#features">Features</a>
         <a href="#how-it-works">How It Works</a>
+        <a href="#simulation">Simulation</a>
         <a href="#for-whom">For Whom</a>
         <a href="https://download.kasorashibainu.com/downloads/Lucky_Stock_Installer.exe" class="cta" download>Download</a>
       </nav>
@@ -33,7 +34,14 @@
         <h1>Grow Your Portfolio During Bear Markets</h1>
         <p class="hero-subtitle">AI-powered investment planning that adapts to market trends</p>
         <p class="hero-description">Lucky Stock leverages machine learning to predict market trends and deliver daily buy suggestions. Invest adaptively, not emotionally.</p>
-        <a href="https://download.kasorashibainu.com/downloads/Lucky_Stock_Installer.exe" class="button button-primary" download>Download for Windows</a>
+      </div>
+    </section>
+
+    <section class="simulation-promo" aria-labelledby="simulation-promo-title">
+      <div class="simulation-promo-content">
+        <h2 id="simulation-promo-title">Want to see how the tool works?</h2>
+        <p>Run a market simulation with your own stock and budget.</p>
+        <a href="#simulation" class="button button-primary">Check Out the Simulation Tool</a>
       </div>
     </section>
 
@@ -99,8 +107,48 @@
       </div>
     </section>
 
+    <section id="simulation" class="simulation">
+      <div class="section-heading">
+        <h2>Simulation</h2>
+      </div>
+
+      <form id="simulation-form" class="simulation-form">
+        <label>
+          <span>Stock Ticker</span>
+          <input name="ticker" type="text" maxlength="12" required>
+        </label>
+        <label>
+          <span>Start Date</span>
+          <input name="startDate" type="date" required>
+        </label>
+        <label>
+          <span>End Date</span>
+          <input name="endDate" type="date">
+        </label>
+        <label>
+          <span>Total Cash</span>
+          <input name="totalCash" type="text" inputmode="decimal" pattern="^\d+(?:\.\d{1,2})?$" required>
+        </label>
+        <button type="submit" class="button button-primary">Run Simulation</button>
+      </form>
+
+      <p id="simulation-status" class="simulation-status" hidden>Computing simulation...</p>
+      <p id="simulation-error" class="simulation-error" hidden></p>
+      <div id="simulation-results" class="simulation-results" hidden>
+        <div id="simulation-summary" class="simulation-summary" hidden></div>
+        <div class="simulation-result-section">
+          <h3>Compare ML predictions with actual prices</h3>
+          <div id="prediction-chart" class="simulation-chart"></div>
+        </div>
+        <div class="simulation-result-section">
+          <h3>Compare DCA with Lucky Stock's investment logic</h3>
+          <div id="strategy-chart" class="simulation-chart"></div>
+        </div>
+      </div>
+    </section>
+
     <section id="for-whom" class="for-whom">
-      <h2>Designed for Investors with Basic Stock Knowledge</h2>
+      <h2>A Tool for Long-term Investors</h2>
       <div class="audience">
         <p>Lucky Stock is built for investors who:</p>
         <ul>
@@ -111,12 +159,15 @@
         </ul>
           <p class="note"><strong>Note:</strong> This tool <strong>does not provide financial advice</strong> and is designed primarily for ETFs, which have historically shown stronger long-term recovery potential. It may also be used for individual stocks, but these carry much greater risk as recovery is not guaranteed and thus the tool should be used alongside your own research and financial planning.</p>
         <p class="note"><strong>Disclaimer:</strong> The developer of this tool is not liable for any financial losses incurred through its use. This tool does not guarantee investment growth, and losses are possible. You use this tool at your own risk and assume full responsibility for your investment decisions.</p>
+      </div>
     </section>
   </main>
 
   <footer class="footer">
     <p>&copy; 2026 Lucky Stock. All rights reserved. | <a href="../">Back to Home</a></p>
   </footer>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
   <script src="menu.js"></script>
+  <script src="simulation.js"></script>
 </body>
 </html>

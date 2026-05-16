@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+pandas
+numpy
+scikit-learn
+scipy
+yfinance
+pandas-datareader
+requests
+urllib3
+curl_cffi
