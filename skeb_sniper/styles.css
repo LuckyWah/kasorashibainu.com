@@ -2363,8 +2363,12 @@ form button:focus-visible,
 #download-btn-windows,
 #download-btn-linux {
   background: var(--ss-green);
+  color: #ffffff;
+  text-decoration: none;
 }
 
+#download-btn-windows:active,
+#download-btn-linux:active,
 #download-btn-windows:hover,
 #download-btn-windows:focus-visible,
 #download-btn-linux:hover,
@@ -2372,6 +2376,11 @@ form button:focus-visible,
   background: #176f50;
   color: #ffffff;
   text-decoration: none;
+}
+
+#download-btn-windows:visited,
+#download-btn-linux:visited {
+  color: #ffffff;
 }
 
 .download-container {
