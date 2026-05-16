@@ -197,11 +197,12 @@
 
 .card-art {
   width: 100%;
-  height: 132px;
+  height: clamp(180px, 22vw, 240px);
   display: block;
-  object-fit: cover;
+  object-fit: contain;
+  object-position: center;
   border-bottom: 1px solid var(--ss-line);
-  background: #eef5ff;
+  background: #ffffff;
 }
 
 .section-controls {
