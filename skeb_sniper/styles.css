@@ -2346,10 +2346,15 @@ form button,
 }
 
 .button:hover,
+.button:focus-visible,
 .apply-coupon:hover,
+.apply-coupon:focus-visible,
 form button:hover,
+form button:focus-visible,
+.chat-container button:focus-visible,
 .chat-container button:hover {
   background: var(--ss-blue-dark);
+  color: #ffffff;
   box-shadow: 0 10px 24px rgba(31, 111, 214, 0.24);
   transform: translateY(-1px);
   text-decoration: none;
@@ -2361,8 +2366,12 @@ form button:hover,
 }
 
 #download-btn-windows:hover,
-#download-btn-linux:hover {
+#download-btn-windows:focus-visible,
+#download-btn-linux:hover,
+#download-btn-linux:focus-visible {
   background: #176f50;
+  color: #ffffff;
+  text-decoration: none;
 }
 
 .download-container {
