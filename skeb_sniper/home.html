@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <script>
@@ -14,35 +14,21 @@
       <!-- Advertisement Block with slideUp animation -->
       <div class="advertisement slide-up">
         <h2 class="ad-title">Tired of Missing Commission Slots?</h2>
-        <p>
-          Have you ever woken up to find that your favorite artist’s commission slot has vanished? We know how frustrating it is to wait for months 
-          only to miss your chance because the slot filled up while you were asleep. But worry no more! Our software levels the playing field 
-          for Western users by automatically sending requests to artists right after they open!
-        </p>
-        <p>
-          The price is only <strong>$1/month</strong> or <strong>$10/year</strong> to keep it affordable for our art commissioning community!
-          However, this price will <strong>not</strong> cover development and maintenance costs.
-        </p>
-
-        <p>
-          This project was built completely from scratch by one person! If you'd like to support the project, please consider donating via Ko-fi! Every dollar is appreciated!
-        </p>
-
-        <p>
-          <a href="https://ko-fi.com/kasora_software" target="_blank">
-            <img height="36" 
-                src="https://cdn.ko-fi.com/cdn/kofi5.png?v=3" 
-                alt="Support me on Ko-fi" />
-          </a>
-        </p>
-
+        <div class="hero-copy">
+          <p>Skeb Sniper automatically sends your request right after your favorite artist opens commissions, so you do not have to stay awake or keep checking manually.</p>
+        </div>
+        <details class="support-card">
+          <summary>Support this project</summary>
+          <p>This project was built completely from scratch by one person. If you'd like to support development, please consider donating via <a href="https://ko-fi.com/kasora_software" target="_blank">Ko-fi</a>. Every dollar is appreciated!</p>
+        </details>
       </div>    
       <div class="features-section">
         <h2 id="featureHeading" class="feature-heading">
           Discover Advanced Features of Skeb Sniper
         </h2>
-        <div class="features-container">
+        <div class="features-container overview-grid">
           <div class="feature-card">
+            <img class="card-art" src="assets/cards/email-monitoring.png" alt="" aria-hidden="true">
             <h3>Email-Triggered Monitoring</h3>
             <ul>
               <li>Never visits Skeb to monitor the artist's commission status.</li>
@@ -51,6 +37,7 @@
             </ul>
           </div>
           <div class="feature-card">
+            <img class="card-art" src="assets/cards/auto-request.png" alt="" aria-hidden="true">
             <h3>Fully Automated Request Submission</h3>
             <ul>
               <li>Automated user authentication and log-in.</li>
@@ -59,6 +46,7 @@
             </ul>
           </div>
           <div class="feature-card">
+            <img class="card-art" src="assets/cards/compliance.png" alt="" aria-hidden="true">
             <h3>ToS-Compliant and Ethical</h3>
             <ul>
               <li>Only one request to Skeb is made per artist, imposing less server load than manual checks.</li>
@@ -67,6 +55,7 @@
             </ul>
           </div>
           <div class="feature-card">
+            <img class="card-art" src="assets/cards/user-design.png" alt="" aria-hidden="true">
             <h3>User-Centric Designs</h3>
             <ul>
               <li>Includes an installer for Windows and a prebuilt Docker image for Linux.</li>
@@ -75,6 +64,7 @@
             </ul>
           </div>
           <div class="feature-card">
+            <img class="card-art" src="assets/cards/privacy-security.png" alt="" aria-hidden="true">
             <h3>Privacy and Security</h3>
             <ul>
               <li>Your data is encrypted with user-specific and machine-specific mechanisms to prevent attacks.</li>
@@ -83,6 +73,7 @@
             </ul>
           </div>
           <div class="feature-card">
+            <img class="card-art" src="assets/cards/background-service.png" alt="" aria-hidden="true">
             <h3>Reliable Background Service</h3>
             <ul>
               <li>Runs as a Windows Service on Windows and a Daemon on Linux for continuous operation.</li>
@@ -91,6 +82,7 @@
             </ul>
           </div>
           <div class="feature-card">
+            <img class="card-art" src="assets/cards/lightweight.png" alt="" aria-hidden="true">
             <h3>Ultra-Lightweight Design</h3>
             <ul>
               <li>No webpage is launched to monitor artists, ensuring minimal network usage.</li>
@@ -99,6 +91,7 @@
             </ul>
           </div>
           <div class="feature-card">
+            <img class="card-art" src="assets/cards/email-notification.png" alt="" aria-hidden="true">
             <h3>Efficient Email Notification Handling</h3>
             <ul>
               <li>Supports popular email providers like Gmail and Outlook.</li>
@@ -112,10 +105,10 @@
       <!-- Comparison -->
       <div class="features-section">
         <h2 class="feature-heading">Our Software vs Other Competitors</h2>
-    
         <!-- Feature Box: Fully Automated Workflow -->
-        <div class="feature-box-container">
+        <div class="feature-box-container comparison-grid">
           <div class="feature-box">
+            <img class="card-art" src="assets/cards/workflow.png" alt="" aria-hidden="true">
             <h3 class="feature-title">Fully Automated Workflow</h3>
             <div class="feature-content">
               <div class="comparison-card our-software">
@@ -130,6 +123,7 @@
           </div>
         
           <div class="feature-box">
+            <img class="card-art" src="assets/cards/api-integration.png" alt="" aria-hidden="true">
             <h3 class="feature-title">Email API Integration</h3>
             <div class="feature-content">
               <div class="comparison-card our-software">
@@ -144,11 +138,12 @@
           </div>
         
           <div class="feature-box">
+            <img class="card-art" src="assets/cards/secure-storage.png" alt="" aria-hidden="true">
             <h3 class="feature-title">Privacy and Security</h3>
             <div class="feature-content">
               <div class="comparison-card our-software">
                 <h4 class="card-title">Our Software</h4>
-                <p>Encrypts all sensitive data (including your password), stores it locally, and never transmits it. Encryption is both user‐ and machine‐specific.</p>
+                <p>Encrypts all sensitive data (including your password), stores it locally, and never transmits it. Encryption is both userâ€ and machineâ€specific.</p>
               </div>
               <div class="comparison-card other-competitor">
                 <h4 class="card-title">Other Competitors</h4>
@@ -158,6 +153,7 @@
           </div>
         
           <div class="feature-box">
+            <img class="card-art" src="assets/cards/gui-dashboard.png" alt="" aria-hidden="true">
             <h3 class="feature-title">User-Friendly GUI</h3>
             <div class="feature-content">
               <div class="comparison-card our-software">
@@ -172,6 +168,7 @@
           </div>
         
           <div class="feature-box">
+            <img class="card-art" src="assets/cards/background-operation.png" alt="" aria-hidden="true">
             <h3 class="feature-title">Reliable Background Operation</h3>
             <div class="feature-content">
               <div class="comparison-card our-software">
@@ -186,6 +183,7 @@
           </div>
         
           <div class="feature-box">
+            <img class="card-art" src="assets/cards/cross-platform.png" alt="" aria-hidden="true">
             <h3 class="feature-title">Cross-Platform</h3>
             <div class="feature-content">
               <div class="comparison-card our-software">
@@ -200,6 +198,7 @@
           </div>
         
           <div class="feature-box">
+            <img class="card-art" src="assets/cards/setup-automation.png" alt="" aria-hidden="true">
             <h3 class="feature-title">Setup Automation</h3>
             <div class="feature-content">
               <div class="comparison-card our-software">
@@ -214,6 +213,7 @@
           </div>
         
           <div class="feature-box">
+            <img class="card-art" src="assets/cards/documentation.png" alt="" aria-hidden="true">
             <h3 class="feature-title">Comprehensive Documentation</h3>
             <div class="feature-content">
               <div class="comparison-card our-software">
@@ -228,6 +228,7 @@
           </div>
         
           <div class="feature-box">
+            <img class="card-art" src="assets/cards/licensing.png" alt="" aria-hidden="true">
             <h3 class="feature-title">Licensing</h3>
             <div class="feature-content">
               <div class="comparison-card our-software">
@@ -245,14 +246,15 @@
       </div>
 
       <div class="features-section">
-        <h2 class="feature-heading">Learn How to Use Skeb Sniper</h2>
-        <div class="video-wrapper">
+        <h2 class="feature-heading">Tutorial</h2>
+        <div class="video-wrapper walkthrough-video">
           <iframe class="youtube-video" src="https://www.youtube.com/embed/7NezP3V8jw4"
             title="Skeb Sniper Tutorial" frameborder="0" allowfullscreen></iframe>
-        </div>        
+        </div>
       </div>   
 
     </div> 
   </div>
 </body>
 </html>
+

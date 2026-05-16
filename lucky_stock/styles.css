@@ -98,6 +98,26 @@ a:hover {
   color: var(--bg-dark);
 }
 
+.menu-toggle {
+  display: none;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--primary);
+  font-size: 1.35rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.menu-toggle:hover,
+.menu-toggle:focus-visible {
+  border-color: var(--primary);
+  outline: none;
+}
+
 /* Main content */
 main {
   max-width: 1200px;
@@ -209,8 +229,18 @@ main {
 }
 
 .feature-icon {
-  font-size: 3rem;
+  width: 68px;
+  height: 68px;
+  display: grid;
+  place-items: center;
   margin-bottom: 16px;
+}
+
+.feature-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
 }
 
 .feature-card h3 {
@@ -381,12 +411,45 @@ main {
 
 /* Responsive */
 @media (max-width: 768px) {
-  .nav {
-    gap: 16px;
+  .header-content {
+    position: relative;
   }
 
-  .nav a {
-    font-size: 0.85rem;
+  .menu-toggle {
+    display: grid;
+  }
+
+  .nav {
+    display: none;
+    position: absolute;
+    top: calc(100% + 10px);
+    left: clamp(20px, 5vw, 40px);
+    right: clamp(20px, 5vw, 40px);
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: rgba(10, 14, 39, 0.98);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+  }
+
+  .nav.show {
+    display: flex;
+  }
+
+  .nav a,
+  .nav a.cta {
+    display: block;
+    width: 100%;
+    padding: 11px 12px;
+    border-radius: 6px;
+    font-size: 0.95rem;
+  }
+
+  .nav a:hover {
+    background: rgba(0, 217, 255, 0.08);
   }
 
   .hero {
@@ -420,15 +483,6 @@ main {
 }
 
 @media (max-width: 640px) {
-  .nav {
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .nav a {
-    padding: 8px 12px;
-  }
-
   .hero-subtitle {
     font-size: 1.1rem;
   }

@@ -65,6 +65,7 @@ function openTab(evt, tabName) {
                 if (tabName === "home") {
                     initializeCarousel();
                     initFeatureCardLayout();
+                    initHomeDisclosureCards();
                 }
                 if (tabName === "contact") attachFormHandler();
                 if (tabName === "purchase") initializePurchaseTab();
@@ -159,6 +160,10 @@ function initializeCarousel() {
 function initFeatureCardLayout() {
     const containers = document.querySelectorAll('.features-container, .feature-box-container');
     containers.forEach(container => {
+      if (container.classList.contains("overview-grid") || container.classList.contains("comparison-grid")) {
+        return;
+      }
+
       const updateWidth = () => {
         const containerWidth = container.offsetWidth;
         const gap = 20;
@@ -177,6 +182,57 @@ function initFeatureCardLayout() {
       window.addEventListener('resize', updateWidth);
     });
   }
+
+function initHomeSectionControls() {
+    document.querySelectorAll(".section-controls button").forEach(button => {
+        button.addEventListener("click", () => {
+            const selector = button.dataset.target;
+            const direction = Number(button.dataset.direction || 1);
+            const container = document.querySelector(selector);
+            if (!container) return;
+
+            const card = container.querySelector(".feature-card, .feature-box");
+            const gap = parseFloat(getComputedStyle(container).gap || "0");
+            const distance = card ? card.getBoundingClientRect().width + gap : container.clientWidth;
+            container.scrollBy({ left: direction * distance, behavior: "smooth" });
+        });
+    });
+}
+
+function initHomeDisclosureCards() {
+    const setupGroup = (selector) => {
+        const cards = Array.from(document.querySelectorAll(selector));
+        cards.forEach((card, index) => {
+            card.classList.remove("is-open");
+            card.setAttribute("tabindex", "0");
+            card.setAttribute("role", "button");
+            card.setAttribute("aria-expanded", "false");
+
+            const toggle = () => {
+                const isOpen = card.classList.contains("is-open");
+                cards.forEach(item => {
+                    item.classList.remove("is-open");
+                    item.setAttribute("aria-expanded", "false");
+                });
+                if (!isOpen) {
+                    card.classList.add("is-open");
+                    card.setAttribute("aria-expanded", "true");
+                }
+            };
+
+            card.addEventListener("click", toggle);
+            card.addEventListener("keydown", (event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    toggle();
+                }
+            });
+        });
+    };
+
+    setupGroup("#home .feature-card");
+    setupGroup("#home .feature-box");
+}
   
 // ------------------------------------ Chatbot ------------------------------------
 function toggleChat() {
