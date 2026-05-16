@@ -6,6 +6,7 @@
   const summary = document.getElementById("simulation-summary");
   const predictionChart = document.getElementById("prediction-chart");
   const strategyChart = document.getElementById("strategy-chart");
+  const strategyMetric = document.getElementById("strategy-metric");
 
   if (!form) {
     return;
@@ -13,6 +14,14 @@
 
   const apiBase = (window.LUCKY_STOCK_API_BASE || "").replace(/\/$/, "");
   const totalCashInput = form.elements.totalCash;
+  const strategyMetricTitles = [
+    "Portfolio Value ($)",
+    "Stock Value ($)",
+    "Average Cost ($)",
+    "Daily Investment ($)",
+    "Remaining Cash ($)",
+    "Return on Invested Capital",
+  ];
 
   function validateTotalCash() {
     const value = String(totalCashInput.value || "").trim();
@@ -49,6 +58,19 @@
     strategyChart.innerHTML = "";
   }
 
+  function updateStrategyMetric() {
+    const metricIndex = Number(strategyMetric.value);
+    const traceCount = strategyMetricTitles.length * 2;
+    const visible = Array.from({ length: traceCount }, (_, index) => {
+      return index === metricIndex * 2 || index === metricIndex * 2 + 1;
+    });
+
+    Plotly.restyle(strategyChart, { visible, showlegend: visible });
+    Plotly.relayout(strategyChart, {
+      "yaxis.title.text": strategyMetricTitles[metricIndex],
+    });
+  }
+
   function formatDisplayDate(value) {
     const [year, month, day] = String(value || "").split("-");
 
@@ -76,6 +98,7 @@
   }
 
   totalCashInput.addEventListener("input", validateTotalCash);
+  strategyMetric.addEventListener("change", updateStrategyMetric);
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -123,6 +146,9 @@
       Plotly.newPlot(strategyChart, data.strategyChart.data, data.strategyChart.layout, {
         responsive: true,
         displaylogo: false,
+      }).then(() => {
+        strategyMetric.value = "0";
+        updateStrategyMetric();
       });
     } catch (err) {
       showError(err.message || "Simulation failed.");

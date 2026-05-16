@@ -142,6 +142,17 @@
         </div>
         <div class="simulation-result-section">
           <h3>Compare DCA with Lucky Stock</h3>
+          <label class="metric-select-label" for="strategy-metric">
+            <span>View</span>
+            <select id="strategy-metric">
+              <option value="0">Portfolio Value</option>
+              <option value="1">Stock Value</option>
+              <option value="2">Average Cost</option>
+              <option value="3">Daily Investment</option>
+              <option value="4">Remaining Cash</option>
+              <option value="5">Return on Invested Capital</option>
+            </select>
+          </label>
           <div id="strategy-chart" class="simulation-chart"></div>
         </div>
       </div>

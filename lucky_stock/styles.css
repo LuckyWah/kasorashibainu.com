@@ -469,6 +469,40 @@ main {
   line-height: 1.3;
 }
 
+.metric-select-label {
+  display: inline-grid;
+  gap: 8px;
+  margin: 0 0 16px;
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.metric-select-label select {
+  min-width: 260px;
+  min-height: 44px;
+  padding: 9px 42px 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-darker);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.metric-select-label select:hover,
+.metric-select-label select:focus {
+  border-color: var(--primary);
+  outline: none;
+}
+
+.metric-select-label option {
+  background: var(--bg-darker);
+  color: var(--text-primary);
+}
+
 .simulation-chart {
   min-height: 420px;
   border: 1px solid var(--border);

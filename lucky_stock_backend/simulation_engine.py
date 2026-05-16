@@ -182,17 +182,17 @@ def build_prediction_chart(plot_df, ticker, prediction_days):
             {
                 "type": "scatter",
                 "mode": "lines",
-                "name": "Lucky Stock",
+                "name": "Predicted Price",
                 "x": plot_df["date"].tolist(),
-                "y": plot_df["actual_future_price"].round(4).tolist(),
+                "y": plot_df["predicted_future_price"].round(4).tolist(),
                 "line": {"color": "#00d9ff", "width": 3},
             },
             {
                 "type": "scatter",
                 "mode": "lines",
-                "name": "DCA",
+                "name": "Actual Price",
                 "x": plot_df["date"].tolist(),
-                "y": plot_df["predicted_future_price"].round(4).tolist(),
+                "y": plot_df["actual_future_price"].round(4).tolist(),
                 "line": {"color": "#ffd700", "width": 3},
             },
         ],
@@ -248,22 +248,6 @@ def build_strategy_chart(result_df):
             ]
         )
 
-    buttons = []
-    for metric_index, (_, y_title) in enumerate(metric_options):
-        visible = [False] * (len(metric_options) * 2)
-        visible[metric_index * 2] = True
-        visible[metric_index * 2 + 1] = True
-        buttons.append(
-            {
-                "label": y_title.replace(" ($)", ""),
-                "method": "update",
-                "args": [
-                    {"visible": visible, "showlegend": [i == metric_index * 2 or i == metric_index * 2 + 1 for i in range(len(visible))]},
-                    {"yaxis": {"title": y_title, "gridcolor": "#2a3347"}},
-                ],
-            }
-        )
-
     return {
         "data": data,
         "layout": {
@@ -273,24 +257,7 @@ def build_strategy_chart(result_df):
             "xaxis": {"title": "Date", "gridcolor": "#2a3347"},
             "yaxis": {"title": "Portfolio Value ($)", "gridcolor": "#2a3347"},
             "legend": {"orientation": "h"},
-            "updatemenus": [
-                {
-                    "type": "dropdown",
-                    "buttons": buttons,
-                    "direction": "down",
-                    "showactive": True,
-                    "x": 0,
-                    "xanchor": "left",
-                    "y": 1.16,
-                    "yanchor": "top",
-                    "bgcolor": "#0a0e27",
-                    "bordercolor": "#2a3347",
-                    "borderwidth": 1,
-                    "font": {"color": "#ffffff"},
-                    "pad": {"r": 8, "t": 4},
-                }
-            ],
-            "margin": {"l": 56, "r": 24, "t": 84, "b": 48},
+            "margin": {"l": 56, "r": 24, "t": 24, "b": 48},
         },
     }
 
