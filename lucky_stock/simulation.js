@@ -94,10 +94,17 @@
         body: JSON.stringify(payload),
       });
 
-      const data = await response.json();
+      const contentType = response.headers.get("content-type") || "";
+      const data = contentType.includes("application/json")
+        ? await response.json()
+        : null;
 
       if (!response.ok) {
-        throw new Error(data.detail || "Simulation failed.");
+        throw new Error(data?.detail || "Simulation API request failed.");
+      }
+
+      if (!data) {
+        throw new Error("Simulation API did not return JSON. Check that /api/simulate is proxied to the backend server.");
       }
 
       renderSummary(data.summary);
