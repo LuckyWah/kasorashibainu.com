@@ -49,15 +49,23 @@
     strategyChart.innerHTML = "";
   }
 
+  function formatDisplayDate(value) {
+    const [year, month, day] = String(value || "").split("-");
+
+    if (!year || !month || !day) {
+      return value;
+    }
+
+    return `${month}/${day}/${year}`;
+  }
+
   function renderSummary(data) {
     const rows = [
       ["Ticker", data.ticker],
-      ["Simulation Period", `${data.startDate} to ${data.endDate}`],
+      ["Simulation Period", `${formatDisplayDate(data.startDate)} to ${formatDisplayDate(data.endDate)}`],
       ["Trading Days", data.tradingDays],
       ["Lucky Stock Final Value", `$${Number(data.toolFinalValue).toLocaleString()}`],
       ["DCA Final Value", `$${Number(data.dcaFinalValue).toLocaleString()}`],
-      ["Lucky Stock Invested", `$${Number(data.toolInvested).toLocaleString()}`],
-      ["DCA Invested", `$${Number(data.dcaInvested).toLocaleString()}`],
     ];
 
     summary.innerHTML = rows

@@ -182,7 +182,7 @@ def build_prediction_chart(plot_df, ticker, prediction_days):
             {
                 "type": "scatter",
                 "mode": "lines",
-                "name": f"Actual {prediction_days}-Day Future Price",
+                "name": "Lucky Stock",
                 "x": plot_df["date"].tolist(),
                 "y": plot_df["actual_future_price"].round(4).tolist(),
                 "line": {"color": "#00d9ff", "width": 3},
@@ -190,7 +190,7 @@ def build_prediction_chart(plot_df, ticker, prediction_days):
             {
                 "type": "scatter",
                 "mode": "lines",
-                "name": f"Predicted {prediction_days}-Day Future Price",
+                "name": "DCA",
                 "x": plot_df["date"].tolist(),
                 "y": plot_df["predicted_future_price"].round(4).tolist(),
                 "line": {"color": "#ffd700", "width": 3},
@@ -275,16 +275,19 @@ def build_strategy_chart(result_df):
             "legend": {"orientation": "h"},
             "updatemenus": [
                 {
+                    "type": "dropdown",
                     "buttons": buttons,
-                    "direction": "right",
+                    "direction": "down",
                     "showactive": True,
                     "x": 0,
                     "xanchor": "left",
-                    "y": 1.18,
+                    "y": 1.16,
                     "yanchor": "top",
                     "bgcolor": "#0a0e27",
                     "bordercolor": "#2a3347",
+                    "borderwidth": 1,
                     "font": {"color": "#ffffff"},
+                    "pad": {"r": 8, "t": 4},
                 }
             ],
             "margin": {"l": 56, "r": 24, "t": 84, "b": 48},
@@ -331,12 +334,20 @@ def run_simulation(ticker, start_date, end_date, total_cash, data_dir="datasets"
 
     tool_cash = float(total_cash)
     tool_shares = 0.0
-    previous_theta = None
     in_correction_mode = False
     reference_high = sim_df["close"].iloc[0]
     tool_rows = []
 
-    for i, (current_date, row) in enumerate(sim_df.iterrows()):
+    theta_history_df = feature_df.loc[:start_ts].tail(config["rolling_opt_window"]).copy()
+    if len(theta_history_df) < 30:
+        theta_history_df = sim_df.head(config["rolling_opt_window"]).copy()
+
+    if len(theta_history_df) >= 30:
+        theta = solve_theta_for_day(theta_history_df, float(total_cash), config)
+    else:
+        theta = np.array([0.0, 0.0, 0.0, 0.0])
+
+    for current_date, row in sim_df.iterrows():
         price = float(row["close"])
 
         if not in_correction_mode and price > reference_high:
@@ -349,22 +360,6 @@ def run_simulation(ticker, start_date, end_date, total_cash, data_dir="datasets"
 
         if in_correction_mode and drawdown <= config["exit_drawdown"]:
             in_correction_mode = False
-
-        history_start = max(0, i - config["rolling_opt_window"])
-        history_df = sim_df.iloc[history_start:i].copy()
-
-        if len(history_df) >= 30:
-            theta_raw = solve_theta_for_day(history_df, float(total_cash), config)
-            if previous_theta is None:
-                theta = theta_raw
-            else:
-                smoothing = config["theta_smoothing"]
-                theta = (1.0 - smoothing) * previous_theta + smoothing * theta_raw
-            previous_theta = theta
-        elif previous_theta is not None:
-            theta = previous_theta
-        else:
-            theta = np.array([0.0, 0.0, 0.0, 0.0])
 
         tool_invest = 0.0
         if in_correction_mode and tool_cash > 0:
@@ -408,10 +403,8 @@ def run_simulation(ticker, start_date, end_date, total_cash, data_dir="datasets"
 
     tool_df = pd.DataFrame(tool_rows)
     fair_investment_cash = float(tool_df["tool_invested_total"].iloc[-1])
-    tool_df["tool_cash"] = (fair_investment_cash - tool_df["tool_invested_total"]).clip(lower=0.0)
-    tool_df["tool_portfolio_value"] = tool_df["tool_stock_value"] + tool_df["tool_cash"]
 
-    dca_cash = fair_investment_cash
+    dca_cash = float(total_cash)
     dca_shares = 0.0
     dca_daily = fair_investment_cash / len(tool_df) if fair_investment_cash > 0 else 0.0
     dca_rows = []
@@ -424,7 +417,7 @@ def run_simulation(ticker, start_date, end_date, total_cash, data_dir="datasets"
         invested_total, stock_value, portfolio_value, avg_cost, roic = compute_metrics(
             dca_cash,
             dca_shares,
-            fair_investment_cash,
+            float(total_cash),
             price,
         )
         dca_rows.append(
