@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+        // If this page is loaded directly, load index.html
+        if (window.location === window.parent.location) {
+            window.location.replace("/index.html#home");
+        }
+    </script>
+</head>
+<body>
+  <div id="home" class="tabcontent active">
+    <div id="adAndCarousel" style="overflow: hidden; transition: max-height 0.5s ease;">
+      <!-- Advertisement Block with slideUp animation -->
+      <div class="advertisement slide-up">
+        <h2 class="ad-title">Tired of Missing Commission Slots?</h2>
+        <p>
+          Have you ever woken up to find that your favorite artist’s commission slot has vanished? We know how frustrating it is to wait for months 
+          only to miss your chance because the slot filled up while you were asleep. But worry no more! Our software levels the playing field 
+          for Western users by automatically sending requests to artists right after they open!
+        </p>
+        <p>
+          <strong>News</strong>: We have reduced to price to only $1/mo and $10/year to make it more affordable for our art commissioning community!
+          However, this price will <strong>not</strong> cover the development and maintainance cost, so if you would like to support my project, 
+          you may consider donations under the purchase tab. Every dollar is appreciated!
+        </p>
+      </div>    
+      <div class="features-section">
+        <h2 id="featureHeading" class="feature-heading">
+          Discover Advanced Features of Skeb Sniper
+        </h2>
+        <div class="features-container">
+          <div class="feature-card">
+            <h3>Email-Triggered Monitoring</h3>
+            <ul>
+              <li>Never visits Skeb to monitor the artist's commission status.</li>
+              <li>Only visits Skeb once to submit your request after your artist opens requests.</li>
+              <li>Instantly sends a request to your artist right after Skeb sends an email notification to your inbox.</li>
+            </ul>
+          </div>
+          <div class="feature-card">
+            <h3>Fully Automated Request Submission</h3>
+            <ul>
+              <li>Automated user authentication and log-in.</li>
+              <li>Automated verification with Skeb by extracting verification codes from emails.</li>
+              <li>Embedded locking mechanism ensuring that each request is sent only once.</li>
+            </ul>
+          </div>
+          <div class="feature-card">
+            <h3>ToS-Compliant and Ethical</h3>
+            <ul>
+              <li>Only one request to Skeb is made per artist, imposing less server load than manual checks.</li>
+              <li>Only official emails from Skeb are processed.</li>
+              <li>No data is collected from Skeb.</li>
+            </ul>
+          </div>
+          <div class="feature-card">
+            <h3>User-Centric Designs</h3>
+            <ul>
+              <li>Includes an installer for Windows and a prebuilt Docker image for Linux.</li>
+              <li>A user-friendly GUI is included in the app to handle every task.</li>
+              <li>Instructions are provided in the GUI's "Help" tab.</li>
+            </ul>
+          </div>
+          <div class="feature-card">
+            <h3>Privacy and Security</h3>
+            <ul>
+              <li>Your data is encrypted with user-specific and machine-specific mechanisms to prevent attacks.</li>
+              <li>Data is stored only on your local machine.</li>
+              <li>Your data is never collected or transmitted.</li>
+            </ul>
+          </div>
+          <div class="feature-card">
+            <h3>Reliable Background Service</h3>
+            <ul>
+              <li>Runs as a Windows Service on Windows and a Daemon on Linux for continuous operation.</li>
+              <li>Automatically restarts after crashes, network issues, or system reboots.</li>
+              <li>Automatically refreshes the Gmail and Outlook token if it expires.</li>
+            </ul>
+          </div>
+          <div class="feature-card">
+            <h3>Ultra-Lightweight Design</h3>
+            <ul>
+              <li>No webpage is launched to monitor artists, ensuring minimal network usage.</li>
+              <li>Only processes emails from Skeb, ignoring irrelevant ones.</li>
+              <li>Remains idle most of the time and only activates when an email from Skeb is received.</li>
+            </ul>
+          </div>
+          <div class="feature-card">
+            <h3>Efficient Email Notification Handling</h3>
+            <ul>
+              <li>Supports popular email providers like Gmail and Outlook.</li>
+              <li>Real-time email listener status updates via the interface.</li>
+              <li>Isolates email notifications so you only receive your own alerts.</li>
+            </ul>
+          </div>
+        </div>
+      </div>  
+  
+      <!-- Comparison -->
+      <div class="features-section">
+        <h2 class="feature-heading">Our Software vs Other Competitors</h2>
+    
+        <!-- Feature Box: Fully Automated Workflow -->
+        <div class="feature-box-container">
+          <div class="feature-box">
+            <h3 class="feature-title">Fully Automated Workflow</h3>
+            <div class="feature-content">
+              <div class="comparison-card our-software">
+                <h4 class="card-title">Our Software</h4>
+                <p>Automatically sends requests as soon as artists open commissions, even while you're asleep.</p>
+              </div>
+              <div class="comparison-card other-competitor">
+                <h4 class="card-title">Other Competitors</h4>
+                <p>Usually requires manual website visits or only provides notifications when an artist opens commissions.</p>
+              </div>
+            </div>
+          </div>
+        
+          <div class="feature-box">
+            <h3 class="feature-title">Email API Integration</h3>
+            <div class="feature-content">
+              <div class="comparison-card our-software">
+                <h4 class="card-title">Our Software</h4>
+                <p>Integrates with Gmail and Outlook using OAuth2, with auto-refresh and a robust webhook for push notifications.</p>
+              </div>
+              <div class="comparison-card other-competitor">
+                <h4 class="card-title">Other Competitors</h4>
+                <p>Often lacks integration with major email providers or relies on simple inbox polling.</p>
+              </div>
+            </div>
+          </div>
+        
+          <div class="feature-box">
+            <h3 class="feature-title">Privacy and Security</h3>
+            <div class="feature-content">
+              <div class="comparison-card our-software">
+                <h4 class="card-title">Our Software</h4>
+                <p>Encrypts all sensitive data (including your password), stores it locally, and never transmits it. Encryption is both user‐ and machine‐specific.</p>
+              </div>
+              <div class="comparison-card other-competitor">
+                <h4 class="card-title">Other Competitors</h4>
+                <p>Often stores data in plain text or uses minimal encryption, making it vulnerable to attacks.</p>
+              </div>
+            </div>
+          </div>
+        
+          <div class="feature-box">
+            <h3 class="feature-title">User-Friendly GUI</h3>
+            <div class="feature-content">
+              <div class="comparison-card our-software">
+                <h4 class="card-title">Our Software</h4>
+                <p>Offers a clean, graphical interface with a real-time dashboard for managing tasks.</p>
+              </div>
+              <div class="comparison-card other-competitor">
+                <h4 class="card-title">Other Competitors</h4>
+                <p>Often rely on command-line interfaces or poorly designed UIs.</p>
+              </div>
+            </div>
+          </div>
+        
+          <div class="feature-box">
+            <h3 class="feature-title">Reliable Background Operation</h3>
+            <div class="feature-content">
+              <div class="comparison-card our-software">
+                <h4 class="card-title">Our Software</h4>
+                <p>Runs as a Windows Service or Linux Daemon and automatically restarts after crashes, network issues, or reboots.</p>
+              </div>
+              <div class="comparison-card other-competitor">
+                <h4 class="card-title">Other Competitors</h4>
+                <p>Often require manual restarts and may silently fail without notice.</p>
+              </div>
+            </div>
+          </div>
+        
+          <div class="feature-box">
+            <h3 class="feature-title">Cross-Platform</h3>
+            <div class="feature-content">
+              <div class="comparison-card our-software">
+                <h4 class="card-title">Our Software</h4>
+                <p>Supports Windows, Linux, and macOS and includes a prebuilt Docker image with all necessary dependencies for Linux/macOS users.</p>
+              </div>
+              <div class="comparison-card other-competitor">
+                <h4 class="card-title">Other Competitors</h4>
+                <p>Often limited to Windows or require complex manual setups on other platforms.</p>
+              </div>
+            </div>
+          </div>
+        
+          <div class="feature-box">
+            <h3 class="feature-title">Setup Automation</h3>
+            <div class="feature-content">
+              <div class="comparison-card our-software">
+                <h4 class="card-title">Our Software</h4>
+                <p>Includes an installer for Windows and shell scripts to automate setup on Linux/macOS.</p>
+              </div>
+              <div class="comparison-card other-competitor">
+                <h4 class="card-title">Other Competitors</h4>
+                <p>Requires manual installation with no automation or guided setup.</p>
+              </div>
+            </div>
+          </div>
+        
+          <div class="feature-box">
+            <h3 class="feature-title">Comprehensive Documentation</h3>
+            <div class="feature-content">
+              <div class="comparison-card our-software">
+                <h4 class="card-title">Our Software</h4>
+                <p>Publicly available FAQ, Trust Center, Release Log, ToS, Privacy Policy, and Contact info.</p>
+              </div>
+              <div class="comparison-card other-competitor">
+                <h4 class="card-title">Other Competitors</h4>
+                <p>Often have minimal or outdated documentation and policies.</p>
+              </div>
+            </div>
+          </div>
+        
+          <div class="feature-box">
+            <h3 class="feature-title">Licensing</h3>
+            <div class="feature-content">
+              <div class="comparison-card our-software">
+                <h4 class="card-title">Our Software</h4>
+                <p>Uses a robust licensing system with server-side validation and device binding to prevent unauthorized sharing.</p>
+              </div>
+              <div class="comparison-card other-competitor">
+                <h4 class="card-title">Other Competitors</h4>
+                <p>Tends to offer basic or no licensing mechanisms.</p>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+
+      <div class="features-section">
+        <h2 class="feature-heading">Learn How to Use Skeb Sniper</h2>
+        <div class="video-wrapper">
+          <iframe class="youtube-video" src="https://www.youtube.com/embed/7NezP3V8jw4"
+            title="Skeb Sniper Tutorial" frameborder="0" allowfullscreen></iframe>
+        </div>        
+      </div>   
+
+    </div> 
+  </div>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+        if (window.location === window.parent.location) {
+            window.location.replace("/index.html#trust");
+        }
+    </script>
+</head>
+<body>
+<div id="trust" class="tabcontent">
+    <div class="info-section" style="display: flex; align-items: flex-start; gap: 20px;">
+        <div style="flex: 1;">
+            <h2>Trust Center</h2>
+            <p>
+                Our software is designed with user privacy and security in mind, and we are not just paying lip service.  
+                If you are privacy-conscious, you do not have to take our words blindly.  
+                You are the judge, and you decide whether Skeb Sniper is safe.  
+                You can verify our claims regarding privacy protection by following these simple tests.
+            </p>
+    
+            <h3>1. Your Twitter Credentials Are Never Transferred and Only Stored Locally</h3>
+            <p>
+                You can verify that Skeb Sniper never transmits your Twitter credentials and encrypts them locally:
+            </p>
+            <ol>
+                <li>Launch Skeb Sniper. The software will perform an online license check. Note that the program checks the license every hour, so complete this test within one hour.</li>
+                <li>Enter a random Twitter username and password.</li>
+                <li>Block all internet access for Skeb Sniper using your firewall or network monitor.</li>
+                <li>Create a task using the random Twitter credentials.</li>
+                <li>Locate the encrypted credentials in a text file named "user info" inside Skeb Sniper’s installation directory.</li>
+                <li>Open the encrypted file with a text editor. You will see unreadable encrypted data. The program will not crash or throw errors, because there is no code attempting to transmit your credentials.</li>
+                <li>Monitor your network activity. You will see no outgoing connections during password entry.</li>
+            </ol>
+            <p>This confirms that password is handled locally without transmitting any sensitive information.</p>
+    
+            <h3>2. We Use User-Specific and Machine-Specific Encryption</h3>
+            <p>
+                You can verify that even if the encrypted credentials file is stolen, it cannot be decrypted using another user account on the same machine or a different machine:
+            </p>
+            <ol>
+                <li>Copy all files in your working directory, including the encrypted user information file, to another user account on the same machine or to a different machine.</li>
+                <li>Launch Skeb Sniper. The software will automatically attempt to decrypt the file.</li>
+                <li>Observe that no user information is shown in Skeb Sniper. This indicates that decryption has failed, and the program has deleted any files it cannot decrypt 
+                    because the encryption key is different.</li>
+            </ol>
+            <p>This confirms that Skeb Sniper’s encryption is tied to both your specific device and user account, preventing unauthorized decryption even if the file is stolen.</p>
+    
+            <h3>3. Our Software Processes Emails Locally Without Transmission</h3>
+            <p>
+                You can verify that Skeb Sniper processes email notifications locally and never transmits your email data to our server:
+            </p>
+            <ol>
+                <li>Launch Skeb Sniper normally. This step requires contacting our server once to check your license. Complete this within one hour.</li>
+                <li>Block all connections to our server <span>kasorashibainu.com</span> using your firewall.</li>
+                <li>Send a test email to your own Gmail account.</li>
+                <li>Observe that Skeb Sniper still detects the new email correctly in the log, even with our server blocked.</li>
+            </ol>
+            <p>This confirms that Skeb Sniper does not transmit your Gmail emails or metadata externally. Email notifications are processed entirely on your device.</p>
+    
+            <h4>
+                By performing these tests, you can be confident that you have absolute control over your own credentials and that your emails are never read by us.
+            </h4>            
+        </div>
+    </div>      
+</div>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kasora Software</title>
+  <link rel="icon" type="image/x-icon" href="Kasora.ico">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Chatbot Button -->
+  <button class="chat-toggle" onclick="toggleChat()">
+    <img src="chatbox.png" alt="Ask Skeb Sniper Assistant" class="chat-icon">
+  </button>
+
+  <!-- Chatbox Panel -->
+  <div class="chat-container" id="chatbox">
+    <h4>Ask Skeb Sniper Assistant</h4>
+    <div class="messages" id="chat"></div>
+    <div class="chat-input-area">
+      <input type="text" id="input" placeholder="Ask something..." onkeydown="handleKey(event)">
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
+  <!-- Navigation Bar -->
+  <div class="nav-bar">
+    <!-- Hamburger Menu Button -->
+    <button class="menu-toggle">☰</button>
+
+    <!-- Branding -->
+    <div class="branding">
+      <img src="Kasora.ico" alt="Logo">
+      <div class="branding-text">
+        <h1>Skeb Sniper</h1>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="nav-tabs">
+      <a class="tablinks active" href="index.html">Home</a>
+      <a class="tablinks" href="purchase.html">Purchase</a>
+      <a class="tablinks" href="faq.html">FAQ</a>
+      <a class="tablinks" href="trust.html">Trust Center</a>
+      <a class="tablinks" href="release.html">Release Log</a>
+      <a class="tablinks" href="tos.html">ToS</a>
+      <a class="tablinks" href="privacy.html">Privacy Policy</a>
+      <a class="tablinks" href="about.html">About</a>
+    </div>
+  </div>
+
+    <div id="about" class="tabcontent">
+        <div class="info-section" style="display: flex; align-items: flex-start; gap: 20px;">
+            <div style="flex: 1;">
+                <h2>About Developer</h2>
+                <img src="portrait.png" alt="Developer Introduction" class="developer-img"
+                style="float: right; margin: 0 0 10px 20px; min-width: 75px; max-width: 200px; height: auto; border-radius: 10px;">    
+                <p>
+                    My name is カソラ (Kasora). I am the solo developer of Skeb Sniper, a private commercial software, 
+                    as well as the owner, developer, and manager of this website.
+                    </p>                
+                    <p>
+                    Since I live in the United States, I often missed the opportunity to commission artists on Skeb because of the 
+                    time difference. In my case, I had been waiting for over two years to commission 
+                    <a href="https://twitter.com/night_owl_zZ" target="_blank">やふくろ (yafukuro)</a>, only to realize that their 
+                    slots usually opened in the afternoon in Japan, which is early morning for me.
+                    By the time I was awake, their commissions were already closed. Since they only open two to three times a year, 
+                    I never really had a chance to commission them, and I just couldn't compete with commissioners in the same time zone 
+                    as the artist.
+                    I also learned that a friend of mine woke up at 3 am just to send a request to their favorite artists 
+                    because their slots always fill up in a couple of minutes, so I created Skeb Sniper to solve this problem for myself 
+                    and my friends who also struggle to get a slot from popular artists. Now with Skeb Sniper, whether we're sleeping, in a meeting, 
+                    or traveling, we can always send a request to our favorite artists without disrupting whatever we're doing.
+                    <p>
+                    I came up with the name Skeb Sniper because a friend of mine said he had to "snipe" when he woke up at 3 am to send 
+                    a request. Sniping feels like the right word because it’s all about grabbing your slot as fast as you can, but now we’re using 
+                    a program to handle all that annoying stuff.
+                    </p>
+                </p>
+                <p>
+                    Finally, I would like to thank the amazing artists who made the drawings for me on this website. The icon and background 
+                    were illustrated by <a href="https://twitter.com/tooboe_huusuke" target="_blank">とおぼえふうすけ (tooboefuusuke)</a>, 
+                    and the portrait on the right was created by <a href="https://twitter.com/yakinikuinu" target="_blank">がみ (gami)</a>.
+                </p>                             
+            </div>
+        </div>      
+    </div>
+</body>
+</html>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+        // If this page is loaded directly, load index.html
+        if (window.location === window.parent.location) {
+            window.location.replace("/index.html#contact");
+        }
+    </script>
+</head>
+<body>
+<div id="contact" class="tabcontent">
+  <div class="info-section">
+      <h2>Contact Us</h2>
+      <p>Encountered bugs? Can't find answers to your questions in FAQ? Contact us using the form below!</p>
+      <form id="Form" action="https://formspree.io/f/myzkjbda" method="POST">
+          <label for="email">Email:</label>
+          <input type="email" id="email" name="email" required>
+          <label for="subject">Subject:</label>
+          <input type="text" id="subject" name="subject" required>
+          <label for="request">Your Message:</label>
+          <textarea id="request" name="request" rows="4" style="resize: vertical;" required></textarea>
+          <button type="submit">Submit</button>
+      </form>
+      <p id="Response" style="text-align:center; font-weight:500;"></p>
+  </div>
+</div>
+</body>
+</html>

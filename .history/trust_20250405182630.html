@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+        if (window.location === window.parent.location) {
+            window.location.replace("/index.html#trust");
+        }
+    </script>
+</head>
+<body>
+<div id="trust" class="tabcontent">
+    <div class="info-section" style="display: flex; align-items: flex-start; gap: 20px;">
+        <div style="flex: 1;">
+            <h2>Trust Center</h2>
+            <p>
+                Skeb Sniper is designed with real user privacy and security in mind.  
+                You don't have to trust our words — you can independently verify that Skeb Sniper protects your data by following these simple tests.
+            </p>
+
+            <h3>1. Password Handling is 100% Local</h3>
+            <p>
+                You can verify that Skeb Sniper never transmits your Twitter credentials and encrypts them locally:
+            </p>
+            <ol>
+                <li>Block all internet access for Skeb Sniper using your firewall or network monitor.</li>
+                <li>Launch Skeb Sniper and enter a random Twitter username and password.</li>
+                <li>Locate the encrypted credentials file created inside Skeb Sniper’s installation directory.</li>
+                <li>Open the encrypted file with a text editor — you will see unreadable encrypted data.</li>
+                <li>Monitor your network activity — you will see no outgoing connections during password entry.</li>
+            </ol>
+            <p>Result: This proves that password handling is performed purely locally, without transmitting any sensitive information.</p>
+
+            <h3>2. User and Machine-Specific Encryption</h3>
+            <p>
+                You can verify that even if the encrypted credentials file is stolen, it cannot be decrypted on any other machine or user account:
+            </p>
+            <ol>
+                <li>Copy the encrypted credentials file to another user account on the same machine.</li>
+                <li>Launch Skeb Sniper under the new user account and attempt to decrypt the file.</li>
+                <li>Observe that decryption fails because the encryption key is different.</li>
+                <li>Copy the encrypted file to a different machine entirely and try again.</li>
+                <li>Observe that decryption also fails on a different machine.</li>
+            </ol>
+            <p>Result: This proves that Skeb Sniper's encryption is tied to both your specific device and user account, preventing unauthorized decryption even if the file is stolen.</p>
+
+            <h3>3. Local Email Processing Without Transmission</h3>
+            <p>
+                You can verify that Skeb Sniper processes Gmail notifications locally and never transmits your email data to our server:
+            </p>
+            <ol>
+                <li>Activate your Skeb Sniper license normally (this step requires contacting our server once).</li>
+                <li>After activation, block all future connections to <span style="font-weight: bold;">kasorashibainu.com</span> using your firewall.</li>
+                <li>Send a test email to your Gmail account.</li>
+                <li>Observe that Skeb Sniper still detects the new email correctly, even with our server blocked.</li>
+                <li>Optionally, monitor network traffic — you will see only connections to Google's Gmail servers and no transmission to kasorashibainu.com.</li>
+            </ol>
+            <p>Result: This proves that Skeb Sniper does not transmit your Gmail emails or metadata externally. Email notifications are handled entirely on your device.</p>
+
+            <hr style="margin-top: 40px;">
+
+            <h3>Summary</h3>
+            <p>
+                Skeb Sniper uses true user-controlled encryption and local processing to guarantee your privacy.  
+                You can independently verify:
+            </p>
+            <ul>
+                <li>Your Twitter credentials are encrypted locally without transmission.</li>
+                <li>Encryption is tied to your specific device and user account.</li>
+                <li>Your Gmail emails are never transmitted externally after license activation.</li>
+            </ul>
+            <p>
+                You have full ownership and control over your private information — and you can prove it yourself.
+            </p>
+        </div>
+    </div>      
+</div>
+</body>
+</html>

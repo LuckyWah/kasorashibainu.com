@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+        // If this page is loaded directly, load index.html
+        if (window.location === window.parent.location) {
+            window.location.replace("/index.html#faq");
+        }
+    </script>
+</head>
+<body>
+<div id="faq" class="tabcontent">
+  <div class="info-section">
+    <h2>Frequently Asked Questions</h2>
+
+    <h3>Security and Privacy</h3>
+    <details>
+      <summary>My Windows PC flags the application as a security concern. Is this application a security threat?</summary>
+      <p>No, this happens because Windows does not trust unsigned executables and may flag them as potential malware. 
+        The warning appears because our executable lacks a valid certificate authority (CA), 
+        which requires a costly certification process that is not necessary for this software. 
+        You can manually trust the executable, as it is safe and not malware.</p>          
+    </details>
+
+    <details>
+      <summary>My antivirus software detected the application as a trojan. Is this true?</summary>
+      <p>No, this is a false positive. You can manually mark our software as trusted, as we have no reason to distribute a trojan, 
+        nor would it be legal to do so.</p>    
+    </details>  
+
+    <details>
+      <summary>Are my Twitter credentials safe?</summary>
+      <p>Yes, your Twitter credentials are highly secure because they are encrypted using a machine-specific and user-specific key.
+        Our application features enterprise-level security as the encryption key is derived using PBKDF2 with SHA-256 and a 16-byte 
+        user-specific salt at each runtime, and this key encrypts your data using AES-128 in CBC mode with HMAC-SHA256 authentication, 
+        ensuring that only your user account and your device can decrypt the stored data. This makes any attempt to steal your 
+        credentials remotely impossible.</p>
+    </details>
+
+    <details>
+      <summary>Do you collect any sensitive data from us?</summary>
+      <p>No, we never collect any sensitive data from you, including your Gmail or Outlook account or Twitter credentials. We use enterprise-level 
+        encryption to protect your sensitive data, which is then securely stored on your device. To learn how your data is used, 
+        please see our Privacy Policy. Note that while we do not store any sensitive data, we do store the email address of the PayPal 
+        account used for your purchase. This email is used for license activation and verification.</p>
+    </details>
+
+    <details>
+      <summary>When I try to authenticate using Gmail OAuth, I get a warning that says Google hasn't verified this app. How do I grant 
+        access to the application?</summary>
+      <p>
+        Our application requires read-only access to Gmail, which triggers Google's security verification process. Unfortunately, 
+        Google mandates a CASA (Cloud Application Security Assessment) verification for applications requesting sensitive scopes, such as 
+        the Read-Only scope. CASA verification is a <strong>very costly</strong> security assessment that must be completed annually, 
+        and we currently do not have sufficient funds to cover the verification cost.
+      </p>
+      <p>
+        Because of this, our application cannot be verified and Google will always display a warning when you try to use it. To proceed, 
+        click on <u>Advanced</u> and select <u>Go to Skeb Sniper (unsafe)</u>. If you want to learn how your data is processed, 
+        we encourage you to read our Privacy Policy. If you are not comfortable using our software, you may request a refund. 
+        Once the refund is processed, your usage privileges will be revoked.
+      </p>      
+    </details>
+
+    <h3>Licensing</h3>
+  <details>
+    <summary>The current price is only $1/mo, so why do you require a license?</summary>
+    <p>
+    We require a license to prevent unauthorized use and distribution of Skeb Sniper, which is our intellectual property. 
+    Limiting access to authorized users helps control server load and reduces operational costs.  
+    We also want to prevent potential abuse because misuse by a large number of unauthorized users could lead to complaints about this software
+    as it could undermine fairness in securing commission slots. Since this software is designed to help users secure commissions 
+    due to time difference, misuse may also draw unwanted attention from Skeb.
+    </p>
+
+  </details>
+
+    <details>   
+      <summary>How does licensing work?</summary>  
+      <p>After your purchase, you receive a unique license key, which must be entered with the email you used to make the purchase 
+        when running the program for the first time. Once activated, your license will be tied to your device, and a key file including 
+        your license key and email will be generated and stored in your working directory. The software will perform regular online 
+        license checks when it is actively running. Note that each license can only be activated once per user. If you want to 
+        use both the Windows and Linux versions, you must manually copy your license key file into the working directory of the 
+        other version.</p>  
+    </details>    
+
+    <details>  
+      <summary>What email address is required to activate my license?</summary>  
+      <p>The email you should enter to activate your license is the email address of your PayPal account used to purchase this software.</p>  
+    </details>    
+
+    <details>  
+      <summary>Can I share my license with others?</summary>  
+      <p>No, sharing your license is strictly prohibited by our Terms of Service. Only the original purchaser is authorized 
+        to use the license. If unauthorized use is detected, we reserve the right to revoke the offender's license without 
+        issuing a refund.</p>
+    </details>
+
+    <details>  
+      <summary>How does the application check the license?</summary>  
+      <p>The application performs hourly license verification while running. If the license is found to be invalid 
+        during a license check, the application will terminate immediately.</p>  
+    </details>    
+    
+    <details>  
+      <summary>Can I use my license on multiple devices at the same time?</summary>  
+      <p>No. Your license is bound to your current device and allows only one active device per user. You can switch to a different device, 
+         but the original session will be automatically terminated once the license becomes invalid on the previous device.</p>  
+    </details>  
+    
+    <h3>Subscription</h3>
+    <details>  
+      <summary>Is there a free trial for the subscription?</summary>  
+      <p>Yes, we offer a 30-day free trial for the monthly plan only. This allows you to test our software using the "Test Run" feature 
+        in the application to see if it can automatically log into your account and send a request. If it does not work for you, you 
+        may cancel your plan within the trial period to avoid getting charged.</p>  
+    </details>  
+    
+    <details>  
+      <summary>Can I restart the monthly plan to get another free trial after my first one ends?</summary>  
+      <p>No, each registered user is only entitled to one free trial. You cannot receive a second trial after the first one has ended.</p>  
+    </details>    
+
+    <details>  
+      <summary>Can I switch plans? Will my remaining days be lost?</summary>  
+      <p>Yes, you can switch plans at any time. Your remaining days will not be lost, which means any unused time from your current plan will 
+        be added to the new one. For example, if you have 3 days left on your monthly plan and switch to the yearly plan, you will 
+        have 368 days in total.</p>  
+    </details>  
+    
+    <details>  
+      <summary>Can I request a refund after payment?</summary>  
+      <p>No. As stated in our Terms of Service, we have a no-refund policy. Once payment is made, we cannot issue refunds. However, 
+        you may cancel anytime during the 30-day free trial to avoid being charged if the software does not work for you. 
+        Please note that we are a solo developer making this software in our spare time, so we do not have the capacity to manually 
+        review each refund request.</p>  
+    </details>  
+    
+    <details>  
+      <summary>Will the subscription rate change?</summary>  
+      <p>Yes, the rate is subject to change. If a price adjustment occurs, we will provide at least 30 days' notice so you have time 
+        to decide whether you wish to continue using the application.</p>  
+    </details>    
+
+    <h3>Requirements to Run the Application</h3>
+    <details>
+      <summary>What are the requirements for running this application?</summary>
+        <ul>
+          <li>Ensure you have sufficient Skeb points for the request or that your bank does not require authentication.
+             Otherwise, the program will fail to submit your request.</li>
+          <li>Make sure you are using your Gmail or Outlook account to receive emails from Skeb. 
+            If not, update your email to your Gmail or Outlook account in your Skeb account settings.</li>
+          <li>Confirm that you have enabled notifications for the artist. 
+            If not, visit the artist's Skeb page and click "Notify on seeking started."</li>
+          <li>Test the program and successfully activate the Gmail or Outlook listener before running the task in the background.</li>
+          <li>When running the task in the background, ensure the Gmail or Outlook listener is activated successfully.</li>
+      </ul>        
+    </details>
+
+    <details> 
+      <summary>Can I run this application on my own PC?</summary>  
+      <p>Yes, you can run the application on your PC, but it is recommended to use a server instead. Running it on a 
+          personal computer is not ideal because most users cannot keep their PC running 24/7, and doing so is not good 
+          for your hardware.</p>            
+    </details>
+
+    <details>
+      <summary>Am I required to enter my Twitter credentials?</summary>
+      <p>Yes, the program requires your credentials to log in. While they're not always needed, it's safest to have them available. 
+        When submitting a request, the program will first try to use cookies if you have already logged into your Firefox account.
+        If that fails, it will fall back to your Twitter credentials.</p>          
+    </details>
+
+    <details>
+      <summary>I do not use Gmail or Outlook to receive emails from Skeb. Is there any other options?</summary>
+      <p>Unfortunately, Skeb Sniper currently only supports Gmail and Outlook because they are the most popular email providers. 
+        Each email API is different, and supporting multiple email APIs would require significant time and effort. 
+        Since we are a solo developer, it is hard for us to support multiple email providers.</p>
+    </details>
+
+    <h3>Application Functionality</h3>
+    <details>
+      <summary>How does this program work?</summary>
+      <p>Skeb Sniper is an email driven program, meaning that only when you receive an email from Skeb stating that the artist is open 
+        for requests, the program will send a request to the artist.</p>          
+    </details>
+
+    <details>
+      <summary>What does "Run in Background" in task manager do?</summary>
+      <p>You use "Run in Background" when you genuinely want to send a request to the artist. 
+        Do <strong>not</strong> use it for testing because no fake email will be sent to you to trigger the automation tool. 
+        Automation will only be triggered by the email sent from Skeb. When you click on "Run in Background," 
+        the program starts a background process that runs continuously, allowing you to safely disconnect from your server. 
+        On Windows, it uses a Windows service, while on Linux, it runs as a daemon managed by supervisord, so you need admin/root privileges to run. 
+        The background process automatically shuts down when no tasks are running.</p>          
+    </details>
+
+    <details>
+      <summary>You advertised the application as "sending an instant request." How fast is "instant"?</summary>
+      <p>According to the developer's tests on Windows and Linux servers, using the "Run in Background" feature (not "Test Run," 
+        which may take longer to distinguish scenarios), from the time the artist opens requests on Skeb to the time when 
+        the application successfully sends a request, it takes about 8 seconds. However, the response time may vary depending on factors 
+        such as server latency on Skeb and Google, computer performance. If no errors occur, your request 
+        should be sent well under 1 minute.</p>
+    </details>
+
+    <details>
+      <summary>Why does the status of my task show "Running in Background" but the status of the email listener shows "Not Listening"?</summary>
+      <p>
+        The email listener shown on your user interface checks the status of your email listener in real time. When it shows "Not Listening," 
+        it means the application is not listening for new emails. This is a known issue when running the software in the background, 
+        because the background process is separate from the main application, meaning your user interface in your main application 
+        cannot directly communicate with the background process. In some cases, for example, if you manually terminate the background task, 
+        the email listener will shut down, but the task status may not update. For now, if you see your task running but the listener showing 
+        "Not Listening," please terminate the task and rerun it.
+      </p>
+    </details>    
+
+    <details>
+      <summary>Does sending a request through this application guarantee that the artist will accept my commission?</summary>
+      <p>No, this application is designed to automatically send a request to the artist, replacing the need for manual submission, 
+        so you don’t have to wake up at ungodly hours to send the request yourself. However, whether your request will be accepted 
+        depends on the artist and is beyond this program’s control.</p>
+    </details>
+
+    <h3>Tutorial</h3>
+    <details>
+      <summary>Do I need to install Firefox for Windows if I already have Firefox?</summary>
+      <p>
+        Yes, you should install Firefox even if you already have it on your system. Every user may install Firefox 
+        in a different directory, and the program does not know where your existing installation is located. 
+        There is a known issue where the program may not work properly with preinstalled versions of Firefox due to 
+        problems such as incompatibility, which can prevent Geckodriver, a tool that allows the program to control Firefox, 
+        from functioning normally.
+        If you run the program using "Test Run" and you see Firefox being launched but does not navigate to the artist's URL, 
+        it is likely that your Geckodriver is incompatible with your Firefox. You can check the monitor log for the 
+        corresponding artist to confirm. If this happens, you may uninstall your current Firefox and reinstall it 
+        using our installer.
+      </p>
+    </details>    
+
+    <details>
+      <summary>How do I test the program?</summary>
+      <p>You can test the program by clicking on "Test Run." The program will send you an automated email, 
+        which will trigger the automation tool to send a request to the artist. 
+        We recommend selecting an artist currently open for requests to confirm that the program can log into your account. 
+        If login fails, ensure that Two-Factor Authentication is disabled on Twitter. If you prefer not to send a request right now, 
+        set the amount to a value below the minimum requirement (e.g., 500). If you believe that your setup is correct and you still 
+        do not receive a fake email or after receiving the fake email you do not see a browser being launched by the application, 
+        please contact the developer.</p>          
+    </details>
+
+    <details>
+      <summary>How do I confirm that the program is listening for my emails?</summary>
+      <p>After clicking "Test Run," a pop-up window with a "success" message will confirm that the listener is active.
+         If you are running the task in a background window or as a Windows service, this pop-up will not appear.</p>
+    </details>
+
+    <details>
+      <summary>I am running a task for an artist that is currently open in background, but the program does not send a request to the artist. 
+        Why is that?</summary>
+      <p>Skeb Sniper is an email driven program, so if the artist is currently open, no email will be sent to you from Skeb, 
+        thus nothing will trigger the automation tool and no request will be sent. 
+        Only use "Run in Background" for artists that are currently closed and ensure that you have reserved email notification from Skeb.</p>          
+    </details>
+
+    <h3>Server</h3>
+    <details>   
+      <summary>Are the servers for this website and software managed by you?</summary>  
+      <p>Yes, we manage a webhook server for email notifications and a backend server for this website, maintained by 
+        the developer. If you experience issues such as coupons not working or a browser not launching after 
+        clicking "Test Run," please contact the developer. A webhook server outage may affect email notifications 
+        and backend server outage would impact coupon validation.</p>          
+    </details>   
+
+    <details> 
+      <summary>Do I need to run the application on a server?</summary>  
+      <p>Running the application on a server is not required, but we strongly recommend running it on a server because it is a 
+        long-running program. If you choose to use a server, you will need to set up the server yourself, as we do not provide server hosting.</p>        
+    </details>
+
+    <details>  
+      <summary>How do I choose the right server to run the application?</summary>  
+      <p>Your choice of server depends on your technical expertise and budget:</p>  
+      <ul>  
+          <li><strong>Windows Version:</strong> Good for users with little to no technical experience in computers as  
+            Windows provides a user-friendly graphical user interface (GUI) that handles all tasks without command-line operations.</li>  
+            <li><strong>Linux Version:</strong> Recommended for users with technical expertise seeking a cost-effective 
+              solution. Linux servers are significantly cheaper than Windows servers, but a basic understanding of 
+              Linux systems is required to use them effectively.</li>                  
+      </ul>  
+    </details>      
+
+    <details> 
+      <summary>What are the minimum server requirements?</summary>  
+      <p>Assuming no resource-intensive programs are running on your server, the minimum requirements for running the program are:</p>
+      <ul>  
+        <li><strong>Linux:</strong> 2GB of RAM and a 10GB persistent disk.</li>  
+        <li><strong>Windows:</strong> 4GB of RAM and a 50GB persistent disk.</li>  
+      </ul>  
+      <p>Windows requires more RAM and disk space because it includes a built-in graphical user interface (GUI).</p>  
+    </details>    
+
+    <h3>Linux-Specific Questions</h3>
+    <details>  
+      <summary>Why do you offer a Linux version of the software?</summary>  
+      <p>Our application is a long-running program that continuously monitors emails from Skeb, therefore it is better to run 
+        the application on a server than on your own PC. Most people are familiar with Windows, but due to high Microsoft licensing costs, 
+        a Linux server is a much more affordable alternative.</p>  
+      <p>For example, on Google Cloud Platform as of March 18, 2025, running the program on Linux requires 2GB of RAM 
+        and a 10GB persistent disk, costing approximately <strong>$13</strong> per month. In contrast, a Windows setup requires 
+        4GB of RAM and a 50GB persistent disk, costing <strong>$63</strong> per month. This means that using a Linux server reduces 
+        costs to about <strong>20%</strong> of a Windows server.</p>  
+      <p>Therefore, Linux is the preferred choice for server deployments due to its cost efficiency. However, if you are not 
+        familiar with Linux, we recommend using Windows, as Linux requires more technical knowledge to set up and manage.
+      </p>  
+    </details>    
+
+    <details>  
+      <summary>Do you have a tutorial on running the program on a Linux server?</summary>  
+      <p>Currently, we do not provide a tutorial for running our software on a Linux server, as we expect Linux users to be 
+        familiar with basic commands and GUI forwarding. If you are unsure how to set up GUI forwarding, there are video 
+        tutorials available on YouTube that can guide you through the process. If you are unable to get GUI forwarding to 
+        work, consider using the Windows version instead.</p>  
+    </details>    
+
+    <details>
+      <summary>How do I run the application on a Linux server?</summary>
+      <p>Before running the application, make sure Docker is installed and running on your Linux server. Download the shell scripts 
+        <code>setup.sh</code> and <code>run.sh</code> from the Purchase tab.</p>
+      <p>To set up the container, run:</p>
+      <p><code>./setup.sh</code></p>
+      <p>Since the application requires GUI forwarding, the Docker image includes X11 forwarding to display the GUI on your local PC. 
+        If you are using a Windows PC, we recommend using PuTTY and Xming for X11 forwarding. Note that X11 forwarding can be slow, 
+        so expect some delay after running the program.</p>
+      <p>To launch the GUI, run:</p>
+      <p><code>./run.sh</code></p>
+      <p>You can use this command anytime you want to start the GUI.</p>
+    </details>      
+
+    <details> 
+      <summary>Can I use <code>setup.sh</code> on any Linux system, including my Windows Subsystem for Linux (WSL) on my Windows PC?</summary>  
+      <p>
+        Yes, <code>setup.sh</code> will work on any Linux system as long as your Linux system is properly configured with Docker installed, 
+        an X11 environment with <code>DISPLAY</code> set. The shell script loads the Docker image, copy the necessary files to your 
+        local directories, and runs the container.
+      </p>      
+    </details>    
+
+    <details> 
+      <summary>Can the program still launch a browser after disconnecting from my Linux server?</summary>  
+      <p>Yes. When you use SSH (e.g., with PuTTY), the application's GUI and Firefox use X11 forwarding. If SSH is not active, 
+        the GUI will be displayed using Xvfb. So regardless of the scenario, the application will always be able to launch a browser.</p>        
+    </details>    
+
+    <details>  
+      <summary>Why do I get the error "PuTTY X11 proxy: unable to connect to forwarded X server: Network error: Connection refused" 
+        after running <code>setup.sh</code> using PuTTY with X11 forwarding?</summary>  
+      <p>If you’ve successfully connected to your Linux server via SSH using PuTTY, make sure that:</p>
+      <ul>
+        <li>X11 forwarding is enabled on the Linux server.</li>
+        <li>Your X server (e.g., Xming) is running on your Windows PC.</li>
+        <li>No firewall is blocking the X11 connection.</li>
+      </ul>      
+      <p>The shell script <code>setup.sh</code> is designed to automatically resolve any xauth mismatch by updating the container's 
+        xauth to match the host's.</p>
+    </details>    
+
+    <h3>Tips for How to Send A Successful Request</h3>
+    <details>
+      <summary>Amount</summary>
+      <p><strong>Recommended Amount:</strong> If the amount you entered is below the recommended amount, Skeb may prevent the request from being sent. 
+        If you are unsure about the recommended amount, you can set a multiplier in the application.</p>
+    </details>
+    
+    <details>
+      <summary>Text Validity</summary>
+      <ul>
+        <li><strong>Language and Translation:</strong> Skeb uses automated translation to bridge language barriers between clients and creators. 
+        To ensure clarity, compose your request in a straightforward language and avoid idiomatic expressions or complex sentences 
+        that may not translate accurately.</li>
+        <li><strong>Prohibited Terms:</strong> Certain words or phrases might be flagged by Skeb's system. For example, 
+          mentioning "日本語" ("Japanese") in your request may result in rejection, as Skeb does not accept machine 
+          translations. Note that Skeb uses DeepL for translation.</li>        
+        <li><strong>Clarity and Specificity:</strong> Given that direct communication with creators after sending the request is prohibited by Skeb, 
+          it's essential to include all necessary details in your request. Be specific about what you want in the artwork to ensure the final result 
+          matches your expectations.</li>
+        <li><strong>Character Limit:</strong> Know the maximum character limit set by the artist (usually 1000). 
+          Exceeding this limit may result in text truncation when you use the application to send requests.</li>
+      </ul>
+    </details>
+    
+    <details>
+      <summary>Reference URL</summary>
+      <ul>
+        <li><strong>Accessibility:</strong> If your request includes a reference URL, ensure that the link is publicly 
+          accessible. For platforms like Google Drive, set the sharing settings to "Anyone with the link."</li>
+        <li><strong>Including Reference URL in your Text:</strong> The reference URL input may not appear on Skeb if your message is too short. 
+          Skeb only provides this option when longer text is entered. To ensure your reference URL is included, 
+          always include your reference URL in your text.</li>
+      </ul>
+    </details>
+    
+    <details>
+      <summary>NSFW Content</summary>
+      <ul>
+        <li><strong>NSFW Setting:</strong> If your request involves NSFW content, make sure to set the NSFW toggle 
+          to "On" when entering your request using the application.</li>
+        <li><strong>Compliance with Guidelines:</strong> Even with the NSFW toggle enabled, certain extreme or prohibited 
+          content may still violate Skeb's Terms of Service. Review <a href="https://lp.skeb.jp/client?locale=en" target="_blank">Skeb's guidelines</a> 
+          before submitting.</li>
+      </ul>
+    </details>
+    
+    <details>
+      <summary>Payment</summary>
+      <ul>
+        <li><strong>Points:</strong> Ensure you have enough Skeb points before submitting a request.  
+        The application cannot send requests without sufficient points unless your bank does not require authentication.  
+        Using a credit card may trigger 3D authentication, which automation cannot bypass. You can purchase points on Skeb, 
+        but be aware that they have an expiration date and may expire if not used.
+        </li>
+        <li><strong>Credit Cards:</strong> We do not recommend using credit cards, as most banks in America require 
+          authentication. Because of this, our automation tool cannot send a request if authentication is required. 
+          However, if you are certain that your bank does not require authentication, you can test it on Skeb 
+          by attempting to send a request using your credit card. If you are not redirected to 3D authentication, 
+          you can use your credit card without needing to purchase points.</li>        
+      </ul>     
+    </details>
+    
+    <details>
+      <summary>Additional Note</summary>
+      <p>Even though we have covered the essential information for using our software, you may still encounter issues when submitting a request.
+        If you have more questions on how to use Skeb, you may find the answers on 
+        <a Reddit href="https://www.reddit.com/r/Skeb/comments/1gtxdo5/faq_to_skeb/">Skeb Subreddit</a>. 
+        For more details on the rules for sending requests on Skeb, please refer to 
+        <a href="https://lp.skeb.jp/client?locale=en" target="_blank">Skeb's guidelines</a>.</p>  
+    </details>
+    
+  </div>
+</div>
+</body>
+</html>

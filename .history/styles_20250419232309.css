@@ -1,0 +1,1030 @@
+/* Global Light Theme Styles */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Roboto", sans-serif;
+  font-size:clamp(1.0rem,1vw,2rem);
+  background: url("background.png") no-repeat center center fixed;
+  background-size: cover;
+  color: #333;
+}
+
+code {
+  font-size: 1.2em;
+}
+
+p {
+  margin: 0rem 0rem;
+}
+
+a {
+  color: #007acc;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+ul {
+  padding-left: 20px;
+}
+
+summary {
+  color: #866c47;
+}
+/* ----------------------------- Navigation Bar ----------------------------- */
+.nav-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: white;
+  border-bottom: 2px solid #ddd;
+  padding: 10px 10px;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+/* Navigation Tabs*/
+.nav-tabs {
+  display: flex;
+  padding: 0px;
+  gap: 10px;
+}
+
+/* Nav Buttons */
+.tablinks {
+  background: none;
+  border: none;
+  padding: 12px 16px;
+  cursor: pointer;
+  font-size: 1em;
+  font-weight: 500;
+  color: #333;
+  border-radius: 10px;
+  transition: background 0.3s, color 0.3s;
+}
+
+/* Hover and Active Effects */
+.tablinks:hover,
+.tablinks.active {
+  background: #007acc;
+  color: #fff;
+}
+
+/* Hamburger Menu Button */
+.menu-toggle {
+  display: none; /* Hidden by default on PC */
+}
+
+/* ----------------------------- Branding ----------------------------- */
+.branding {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+.branding img {
+  width: 60px;
+  height: 60px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+.branding .branding-text h1 {
+  margin: 0;
+  font-size: 1.6em;
+  color: #222;
+}
+.branding .branding-text p {
+  margin: 5px 0 0;
+  font-size: 1.2em;
+  color: #555;
+}
+
+/* ----------------------------- Chatbot ----------------------------- */
+.chat-toggle {
+  position: fixed;
+  bottom: 0.5vh;
+  right: 0.5vw;
+  background: none;
+  border: none;
+  padding: 0;
+  width: 12vw;
+  height: 12vw;
+  min-width: 30px;
+  min-height: 30px;
+  max-width: 60px;
+  max-height: 60px;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.chat-icon {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.chat-container {
+  display: none;
+  position: fixed;
+  bottom: 9vh;
+  right: 1vw;
+  width: 80vw;
+  max-width: 600px;
+  background: #fff;
+  padding: 5px 10px 10px 10px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+.chat-container h4 {
+  font-size: 1.5em;
+  margin: 0;
+  text-align: center;
+  color: #007bff;
+  font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+}
+
+.messages {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: 400px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-bottom: 10px;
+  background: #f9f9f9;
+  border-radius: 6px;
+  align-items: stretch;
+}
+
+.message {
+  margin: 8px 0;
+}
+
+.message.user {
+  align-self: flex-end;
+  background-color: #007BFF;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 15px 15px 0 15px;
+  max-width: 80%;
+  width: fit-content;
+  word-wrap: break-word;
+  margin: 2px 5px;
+  text-align: left;
+}
+
+.message.bot {
+  align-self: flex-start;
+  background-color: #e9ecef;
+  color: #333;
+  padding: 8px 12px;
+  border-radius: 15px 15px 15px 0;
+  max-width: 80%;
+  width: fit-content;
+  word-wrap: break-word;
+  margin: 2px 5px;
+  text-align: left;
+}
+
+.message.bot strong {
+  font-weight: bold;
+}
+
+.message.bot em {
+  font-style: italic;
+}
+
+.message.error {
+  align-self: left;
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 8px 12px;
+  border-radius: 15px 15px 15px 0;
+  max-width: 90%;
+  width: fit-content;
+  text-align: left;
+  margin: 2px 5px;
+}
+
+.message.loading {
+  align-self: flex-start;
+  background-color: #f0f0f0;
+  color: #666;
+  padding: 8px 12px;
+  border-radius: 15px 15px 15px 0;
+  max-width: 80%;
+  width: fit-content;
+  text-align: left;
+  margin: 2px 5px;
+}
+
+.chat-container input[type="text"] {
+  width: calc(100% - 90px);
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.chat-input-area {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.chat-container button {
+  width: 70px;
+  padding: 10px;
+  margin-left: 10px;
+  background: #007BFF;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* ----------------------------- Features ----------------------------- */
+/* Shared Section Styling */
+.features-section {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(6px);
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin: 20px auto;
+  text-align: center;
+}
+
+/* Section Headings */
+.feature-heading {
+  font-size: clamp(1.4rem, 2.5vw, 3rem);
+  margin: 5px 0;
+  color: #007acc;
+}
+
+.feature-title {
+  color: #007acc;
+  margin-top: 0;
+  font-size: 1.2rem;
+}
+
+/* Shared Card Container Layout */
+.features-container,
+.feature-box-container {
+  --gap: 20px;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: var(--card-width, 300px);
+  gap: var(--gap);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  width: 100%;
+  padding-bottom: 10px;
+  padding-right: var(--gap);
+  box-sizing: border-box;
+}
+
+/* Shared Card Styles */
+.feature-card,
+.feature-box {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+  text-align: left;
+  scroll-snap-align: start;
+  box-sizing: border-box;
+}
+
+.feature-card:hover,
+.feature-box:hover {
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+}
+
+.feature-card h3,
+.feature-box h3 {
+  margin: 0 0 10px;
+  font-size: 1.3em;
+  color: #007BFF;
+}
+
+.feature-card p,
+.feature-box p {
+  margin-top: 8px;
+  line-height: 1.6;
+  font-size: 0.95em;
+}
+
+.feature-card ul {
+  list-style: disc inside;
+  margin: 0;
+  padding: 0;
+}
+
+.feature-card li {
+  line-height: 1.6;
+  font-size: 0.95em;
+  margin: 8px 0;
+}
+
+/* Comparison Card Styling */
+.comparison-card {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 15px 18px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  font-size: 0.95em;
+  line-height: 1.6;
+  text-align: left;
+  transition: transform 0.2s ease;
+}
+
+.comparison-card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+}
+
+.comparison-card:last-child {
+  margin-bottom: 0;
+}
+
+.comparison-card.our-software {
+  border: 2px solid goldenrod;
+  background: #fdf9ed;
+}
+
+.comparison-card.other-competitor {
+  background: #f9f9f9;
+  border: 1px dashed #bbb;
+  opacity: 0.95;
+}
+
+.card-title {
+  font-weight: 600;
+  font-size: 1em;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.comparison-card.our-software .card-title {
+  color: goldenrod;
+}
+
+.comparison-card.other-competitor .card-title {
+  color: #666;
+}
+/* ----------------------------- Youtube Video ----------------------------- */
+.video-wrapper {
+  position: relative;
+  max-width: 100%;
+  height: 0;
+  padding-bottom: 53%;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.youtube-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 20px;
+}
+/* ----------------------------- Mobile styles using media query ----------------------------- */
+@media (max-width: 1200px) {
+  body {
+      font-size: 14px;
+  }
+  .nav-tabs {
+      display: none;
+      flex-direction: column;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: white;
+      width: 200px;
+      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+      padding: 0px;
+      z-index: 1;
+  }
+
+  .nav-bar {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      background: white;
+      border-bottom: 1px solid #ddd;
+      padding: 10px;
+      position: relative;
+  }
+
+  .nav-tabs.show {
+      display: flex;
+  }
+
+  .menu-toggle {
+    display: block;
+    font-size: 2em;
+    margin: 0;
+    padding: 5px 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #007acc;
+    min-width: 40px;
+    text-align: center;
+  }
+
+  .branding img {
+      width: 50px;
+      height: 50px;
+      margin-left: 5px;
+      margin-right: 5px;
+  }
+  .branding .branding-text h1 {
+      margin: 0;
+      font-size: 1.6em;
+      color: #222;
+  }
+  .branding .branding-text p {
+      margin: 5px 0 0;
+      font-size: 1em;
+      color: #555;
+  }
+
+  code {
+    font-size: 1em;
+  }
+}
+
+/* ----------------------------- Content Container ----------------------------- */
+.container {
+  width: 100%;
+  min-height: 100dvh;
+  box-shadow: 0 8px 8px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(2px);
+}
+
+.tabcontent {
+  display: none;
+  animation: fadeIn 0.5s ease;
+}
+.tabcontent.active {
+  display: block;
+  padding: 2%;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ----------------------------- Advertisement Block in Home ----------------------------- */
+.advertisement {
+  padding: 5px 20px 20px 20px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(6px);
+  border-radius: 1rem;
+  margin-bottom: 20px;
+}
+
+.ad-title {
+  text-align: center;
+  color: #007acc;
+  font-size: clamp(1.5rem, 2.4vw, 2.5rem);
+  margin: 5px 0;
+}
+
+.slide-up {
+  transform: translateY(20px);
+  opacity: 0;
+  animation: slideUp 1s forwards;
+}
+
+@keyframes slideUp {
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* ----------------------------- General Layout Styles ----------------------------- */
+.tabcontent, .info-section {
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* ----------------------------- Demo ----------------------------- */
+.demo-comparison {
+  max-width: 720px;
+  margin: 40px auto;
+  padding: 0 20px;
+  text-align: center;
+}
+
+.plan-table-heading {
+  font-size: 1.8em;
+  margin-bottom: 20px;
+  color: #333;
+  font-weight: 600;
+}
+
+.comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.comparison-table thead {
+  background-color: #f8f9fa;
+}
+
+.comparison-table th,
+.comparison-table td {
+  padding: 16px;
+  border: 1px solid #e0e0e0;
+}
+
+.comparison-table th {
+  font-weight: 600;
+  background-color: #f1f1f1;
+  color: #444;
+}
+
+.comparison-table td:first-child {
+  text-align: left;
+  font-weight: 500;
+  background-color: #fafafa;
+  color: #333;
+}
+
+.comparison-table td {
+  color: #555;
+}
+
+.comparison-table tbody tr:nth-child(even) {
+  background-color: #fcfcfc;
+}
+
+.comparison-table td:last-child,
+.comparison-table td:nth-child(2) {
+  font-weight: 500;
+}
+
+@media (max-width: 600px) {
+  .comparison-table th,
+  .comparison-table td {
+      padding: 12px;
+      font-size: 0.9rem;
+  }
+}
+
+/* ----------------------------- Subscription Plan ----------------------------- */
+.plan-selection, #coupon-section, #purchase-button {
+  margin-bottom: 20px;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.purchase-button {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.purchase-button .plan-selection {
+  display: block;
+  text-align: center;
+}
+
+.purchase-button .plan-option {
+  width: auto;
+  display: inline-block;
+  text-align: left;
+}
+
+/* ----------------------------- Plan Selection Styles ----------------------------- */
+.pricing-table {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto; /* Center the pricing-table */
+}
+
+.plan-option {
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
+  height: auto;
+  width: 50%;
+  cursor: pointer;
+  background-color: #fff;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.plan-option:hover {
+  border-color: #007acc;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.plan-option.selected {
+  border-color: #007acc;
+  background-color: #f8f9fa;
+}
+
+.plan-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.plan-header input[type="radio"] {
+  margin: 0;
+}
+
+.plan-header label {
+  font-size: 1.2em;
+  font-weight: bold;
+  cursor: pointer;
+  color: #333;
+}
+
+.plan-details {
+  min-height: 100px;
+}
+
+.plan-details .price {
+  font-size: 1.2em;
+  margin: 5px 0;
+  color: #007acc;
+  line-height: 1.4;
+}
+
+.plan-details .price span {
+  font-size: 1em;
+  color: #666;
+  display: block;
+  line-height: 1.4;
+}
+
+.plan-details .deal {
+  font-size: 1em;
+  margin: 5px 0;
+  padding: 5px 10px;
+  border-radius: 15px;
+  display: inline-block;
+}
+
+.monthly-deal {
+  background-color: #e6ffe6;
+  color: #007BFF;
+}
+
+.yearly-deal {
+  background-color: #fff3e6;
+  color: #28a745;
+}
+
+/* Coupon section styling */
+#coupon-section {
+  text-align: center;
+  margin: 20px 0;
+  width: 100%;
+  max-width: 600px; /* Match the pricing-table width */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Style the "Your Selected Plan" section */
+.purchase-button {
+  margin-top: 20px;
+  width: 100%;
+}
+
+.purchase-button .plan-selection {
+  display: block;
+  text-align: center;
+  width: 100%;
+}
+
+.purchase-button .plan-option {
+  width: 100%;
+  max-width: 600px; /* Match the pricing-table width */
+  margin: 0 auto; /* Center the plan-option */
+  min-height: 100px;
+  display: block;
+  text-align: left;
+  background-color: #f8f9fa;
+  border: 2px solid #007acc;
+}
+
+/* Style the PayPal buttons to have a max-width */
+#paypal-button-container {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+#paypal-button-container > div {
+  width: 100%;
+}
+
+#paypal-button-container button {
+  width: 100%;
+}
+
+/* Ensure consistent styling for the "Your Selected Plan" card */
+.purchase-button .plan-option strong {
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #333;
+}
+
+.purchase-button .plan-option p {
+  font-size: 1.2em;
+  margin: 5px 0;
+  color: #007acc;
+  line-height: 1.4;
+}
+
+/* ----------------------------- Coupon Section Styles ----------------------------- */
+.coupon-wrapper {
+  text-align: center;
+}
+
+.coupon-input-group {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+
+.coupon-label {
+  font-size: 1em;
+  color: #333;
+  margin-right: 5px;
+  line-height: 1;
+  padding: 0;
+}
+
+.coupon {
+  padding: 8px;
+  font-size: 1em;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  width: 200px;
+  min-width: 100px;
+  outline: none;
+  line-height: 1;
+  box-sizing: border-box;
+}
+
+.coupon:focus {
+  border-color: #007acc;
+  box-shadow: 0 0 5px rgba(0, 122, 204, 0.3);
+}
+
+.apply-coupon {
+  padding: 8px 15px;
+  font-size: 1em;
+  border: none;
+  border-radius: 5px;
+  background: linear-gradient(135deg, #007acc, #005ea6);
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  line-height: 1;
+  box-sizing: border-box;
+}
+
+.apply-coupon:hover {
+  background: linear-gradient(135deg, #005ea6, #007acc);
+}
+
+.discount-message {
+  font-size: 0.9em;
+  margin-top: 10px;
+  color: green;
+  text-align: center;
+}
+/* ----------------------------- Button Styles ----------------------------- */
+.button {
+  padding: 10px 20px;
+  font-size: 1em;
+  border: none;
+  border-radius: 5px;
+  background: linear-gradient(135deg, #007acc, #005ea6);
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  box-sizing: border-box;
+}
+
+.button:hover {
+  background: linear-gradient(135deg, #005ea6, #007acc);
+}
+
+#download-btn-windows, #download-btn-linux {
+  background: linear-gradient(135deg, #28a745, #66ff99);
+}
+
+#download-btn-windows:hover, #download-btn-linux:hover {
+  background: linear-gradient(135deg, #66ff99, #28a745);
+}
+
+/* ----------------------------- Download Section Styles ----------------------------- */
+.download-container {
+  margin-top: 20px;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  text-align: center;
+}
+
+.license-section {
+  margin-top: 20px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.license-section span {
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+}
+
+.license-section button {
+  padding: 5px 10px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.license-section button:hover {
+  background-color: #45a049;
+}
+
+/* ----------------------------- Linux Instructions Styles ----------------------------- */
+.linux-instructions {
+  margin-top: 20px;
+  font-size: 0.9em;
+  color: #666;
+}
+
+.linux-instructions code {
+  background-color: #f5f5f5;
+  padding: 2px 5px;
+  border-radius: 3px;
+}
+/* ----------------------------- Already Purchased ----------------------------- */
+.already-purchased-link {
+  color: #007acc;
+  text-decoration: underline;
+  cursor: pointer;
+  margin-left: 10px; /* Add some spacing between the heading text and the link */
+}
+
+.already-purchased-link:hover {
+  color: #005ea6; /* Darker blue on hover */
+  text-decoration: underline;
+}
+/* ----------------------------- License Check Section Styles ----------------------------- */
+#license-check-section {
+    margin-bottom: 20px;
+}
+
+#license-check-section a {
+    color: #007acc;
+    text-decoration: none;
+}
+
+#license-check-section a:hover {
+    text-decoration: underline;
+}
+/* ----------------------------- Form Styles ----------------------------- */
+form {
+  margin: 20px auto;
+  background: #fafafa;
+  padding: 20px 20px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  color: #333;
+}
+form label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+  text-align: left;
+}
+form input,
+form textarea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  transition: border-color 0.3s;
+  box-sizing: border-box;
+}
+form input:focus,
+form textarea:focus {
+  border-color: #007acc;
+  outline: none;
+}
+/* Restrict textarea resizing to vertical only */
+form textarea {
+  resize: vertical;
+}
+form button {
+  display: block;
+  margin: auto;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #007acc, #66b3ff);
+  border: none;
+  color: #fff;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background-color 0.3s, opacity 0.3s;
+}
+form button:hover {
+  background: linear-gradient(135deg, #66b3ff, #007acc);
+}
+
+/* ----------------------------- Info Section Styles for static pages ----------------------------- */
+.info-section {
+  background: #f9f9f9;
+  padding: 20px;
+  border-radius: 10px;
+  margin: 20px auto;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  color: #333;
+}
+.info-section h2,
+.info-section h3,
+.info-section h4 {
+  color: #007acc;
+}
+.info-section p {
+  line-height: 1.6;
+}
+
+/* ----------------------------- Developer Image ----------------------------- */
+.developer-img {
+  max-width: 100%;
+  display: block;
+  margin: 20px auto;
+}
+
+/* ----------------------------- Release Log Module Styling ----------------------------- */
+.release-log details {
+  background: #f0f0f0;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+.release-log summary {
+  font-weight: 500;
+  cursor: pointer;
+  outline: none;
+  color: #007acc;
+}
+.release-log p {
+  white-space: normal;
+  word-wrap: break-word;
+}

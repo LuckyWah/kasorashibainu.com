@@ -1,0 +1,14 @@
+<div id="payment" class="tabcontent">
+  <div class="info-section">
+      <h2>Payment</h2>
+      <p>Skeb Sniper is currently in its testing phase. The lifetime purchase is <strong>$50</strong>. If you are interested, please complete the form below to receive an invoice.</p>
+      <form id="paymentForm" action="https://formspree.io/f/myzkjbda" method="POST">
+          <label for="email">Email:</label>
+          <input type="email" id="email" name="email" required>
+          <label for="request">Your Request:</label>
+          <textarea id="request" name="request" rows="4" style="resize: vertical;" required></textarea>
+          <button type="submit">Submit</button>
+      </form>
+      <p id="paymentResponse" style="text-align:center; font-weight:500;"></p>
+  </div>
+</div>

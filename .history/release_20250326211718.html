@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+        // If this page is loaded directly, load index.html
+        if (window.location === window.parent.location) {
+            window.location.replace("/index.html#release");
+        }
+    </script>
+</head>
+<body>
+<div id="release" class="tabcontent">
+    <div class="info-section release-log">
+        <h2>Release Log</h2>
+
+        <details>
+            <summary>v1</summary>
+        
+            <details>
+                <summary>v1.0 – 12/27/2024</summary>
+                <p>This is the initial release of Skeb Sniper, featuring core functionalities including automated 
+                    requests and compatibility with Windows servers. A comprehensive tutorial was provided to help 
+                    new users get started smoothly, with step-by-step instructions tailored for first-time deployment and use.</p>
+            </details>
+        
+            <details>
+                <summary>v1.1 – 12/28/2024</summary>
+                <p>This update introduced Linux server compatibility and included a new tutorial for using Skeb Sniper 
+                    on cloud or remote servers. The update also added a detailed guide titled “Running the Script on 
+                    Google Cloud Platform,” making remote deployment more accessible.</p>
+            </details>
+        
+            <details>
+                <summary>v1.2 – 12/29/2024</summary>
+                <p>Anti-detection features were added to help evade bot detection, including a randomized User-Agent with fallback, 
+                    disabled headless mode, tracking protection, and randomized intervals between 5 seconds and 10 minutes. 
+                    Stability improvements were also made for remote deployments, and compatibility with GCP and VNC-based GUI setups was verified.</p>
+            </details>
+        
+            <details>
+                <summary>v1.3 – 12/30/2024</summary>
+                <p>Installation was made significantly easier with dedicated setup scripts for both Windows and Linux. These 
+                    improvements were designed for users with limited technical experience, and the updated tutorial became shorter 
+                    and more user-friendly.</p>
+            </details>
+        
+            <details>
+                <summary>v1.4 – 12/31/2024</summary>
+                <p>This version included bug fixes for the Windows setup.bat script and further refined the tutorial to make it more 
+                    accessible. Additional security steps were included in the instructions to protect user's Twitter credentials.</p>
+            </details>
+        
+            <details>
+                <summary>v1.5 – 01/01/2025</summary>
+                <p>A full graphical user interface (GUI) was introduced for Windows, allowing users to securely input Twitter credentials 
+                    and commission details through encrypted fields. A log file was also added to track program and commission activity. 
+                    Due to the difficulty of GUI forwarding, the Linux version was temporarily discontinued in this release.</p>
+            </details>
+        
+            <details>
+                <summary>v1.6 – 01/02/2025</summary>
+                <p>The Linux version returned in this release, although it uses the command prompt instead of a GUI. The manual 
+                    was improved for both Windows and Linux users. Logging was added for better traceability, and a locking mechanism 
+                    was introduced to prevent duplicate requests. This version was verified by the developer to be fully functional, 
+                    unlike earlier versions.</p>
+            </details>
+        
+            <details>
+                <summary>v1.7 – 01/03/2025</summary>
+                <p>Toggle logic was improved to ensure reliable detection of toggle buttons when sending a request on Skeb. The Windows GUI 
+                    was updated to include an email input field. Users can now generate multiple artist-specific Python files to monitor 
+                    multiple artists in parallel, each file named after the corresponding artist.</p>
+            </details>
+        
+            <details>
+                <summary>v1.8 – 01/29/2025</summary>
+                <p>This version introduced major improvements to the Windows GUI, allowing users to perform all key tasks from the interface 
+                    without referring to the external tutorial. Information is now directly presented within the GUI, making the application 
+                    more user-friendly.</p>
+            </details>
+        
+            <details>
+                <summary>v1.9 – 03/15/2025</summary>
+                <p>Skeb Sniper became an fully event-driven model using Skeb’s email notifications to trigger actions, removing the need 
+                    for unethical web scraping. Both Windows and Linux versions became available for distribution after purchase. 
+                    The manual and release log is moved to this website.</p>
+            </details>
+        </details>
+        
+        <details>
+            <summary>v2</summary>
+            <details>
+                <summary>v2.0 – 03/26/2025</summary>
+                <p>v2.0 introduced a PayPal-powered subscription system with improved license validation. Each user now has a dedicated 
+                    email listener to receive Skeb notifications independently, so they will never receive notifications meant for others. 
+                    The error-handling system was also improved to provide clearer feedback to the user through the GUI, which helps users 
+                    troubleshoot issues more easily.</p>
+            </details>
+        </details>        
+    </div>
+</div>
+</body>
+</html>

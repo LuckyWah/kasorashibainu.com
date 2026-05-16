@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+        // If this page is loaded directly, load index.html
+        if (window.location === window.parent.location) {
+            window.location.replace("/index.html#purchase");
+        }
+    </script>
+</head>
+<body>
+    <div id="purchase" class="tabcontent">
+        <div class="info-section">
+            <!-- Purchase Section -->
+            <div class="purchase-content">
+                <h2>
+                    Start Commissioning Artists Using Skeb Sniper! 
+                    <span id="already-purchased-btn" class="already-purchased-link">Already Purchased?</span>
+                </h2>
+                <p>Choose the plan that fits your needs. Both plans include full access to our software for Windows and Linux! 
+                    The newest version is <strong>2.1</strong>.</p>
+                <p class="linux-note"><strong>Note for Linux Users:</strong> Download <a href="setup.sh" download>setup.sh</a> and 
+                    <a href="run.sh" download>run.sh</a>. Set up your Docker container by running <code>setup.sh</code>, 
+                    then run the application using <code>run.sh</code>.</p>
+                <!-- Plan Selection Section -->
+                <div class="plan-selection">
+                    <div class="pricing-table">
+                        <div class="plan-option" data-plan="monthly">
+                            <div class="plan-header">
+                                <input type="radio" name="plan" id="monthly-plan" value="monthly">
+                                <label for="monthly-plan"><strong>Monthly Plan</strong></label>
+                            </div>
+                            <div class="plan-details">
+                                <p class="price">30-day free trial, then <strong>$1</strong> per month until the end of the limited time deal</p>
+                            </div>
+                        </div>
+                        <div class="plan-option" data-plan="yearly">
+                            <div class="plan-header">
+                                <input type="radio" name="plan" id="yearly-plan" value="yearly">
+                                <label for="yearly-plan"><strong>Yearly Plan</strong></label>
+                            </div>
+                            <div class="plan-details">
+                                <p class="price"><strong>$10</strong> per year until the end of the limited time deal</p>
+                                <p class="deal yearly-deal">2 months free</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    
+            <!-- License Check Section, hidden by default -->
+            <div id="license-check-section" style="display: none;">
+                <h2>Returning User? Check Your License</h2>
+                <p>Enter your email and subscription ID to retrieve your license key and download links.</p>
+                <div class="coupon-input-group">
+                    <label for="subscription-id" class="coupon-label">Subscription ID:</label>
+                    <input type="text" id="subscription-id" class="coupon" placeholder="I-XXXXXXXXXXXX" required>
+                </div>
+                <div class="coupon-wrapper">
+                    <button id="check-license-btn" class="button apply-coupon">Get Your License</button>
+                    <p id="license-error-message" class="discount-message" style="display: none;"></p>
+                </div>
+                <p>Don't have your subscription ID? Check your PayPal account or contact support.</p>
+                <p>New user? <a href="#" id="show-purchase-section">Purchase a subscription</a>.</p>
+            </div>
+    
+            <!-- Coupon section, hidden by default -->
+            <div id="coupon-section" style="display: none;">
+                <div class="coupon-wrapper">
+                    <div class="coupon-input-group">
+                        <label for="coupon" class="coupon-label">Have a coupon?</label>
+                        <input type="text" id="coupon" class="coupon" placeholder="Enter coupon code">
+                        <button id="apply-coupon" class="button apply-coupon">Apply Coupon</button>
+                    </div>
+                    <p id="discount-message" class="discount-message"></p>
+                </div>
+            </div>
+    
+            <!-- PayPal Purchase Button Container, hidden until a plan is selected -->
+            <div id="purchase-button" class="purchase-button" style="display: none;">
+                <h3 style="text-align: center; max-width: 600px; margin: 0 auto 10px;">Your Selected Plan: Monthly</h3>
+                <div class="plan-option">
+                    <strong>Monthly Plan</strong>
+                    <p>30-day free trial, then $5/month</p>
+                    <div id="paypal-button-container"></div>
+                </div>
+            </div>
+    
+            <!-- Container for download buttons, hidden by default -->
+            <div id="download-container" class="download-container" style="display: none;">
+                <h3>Download Skeb Sniper v2.1</h3>
+                <p>Click the buttons below to download your software for Windows or Linux:</p>
+                <div class="button-container">
+                    <a id="download-btn-windows" class="button" style="display: none;">Download Skeb Sniper for Windows</a>
+                    <a id="download-btn-linux" class="button" style="display: none;">Download Skeb Sniper for Linux</a>
+                </div>
+                <p>Links expire in one hour. If you encounter issues, please contact the developer.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
