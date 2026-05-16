@@ -130,8 +130,8 @@ h2 {
   position: relative;
   min-height: 240px;
   display: grid;
-  grid-template-columns: 1fr auto;
-  grid-template-rows: auto 1fr auto;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr;
   gap: 16px;
   align-items: start;
   padding: 26px;
@@ -194,35 +194,6 @@ h2 {
   line-height: 1.55;
 }
 
-.arrow {
-  grid-column: 2;
-  grid-row: 1;
-  width: 46px;
-  height: 46px;
-  display: grid;
-  place-items: center;
-  border: 1px solid rgba(36, 107, 254, 0.18);
-  border-radius: 999px;
-  background: rgba(36, 107, 254, 0.08);
-  color: var(--blue);
-  font-size: 0;
-  font-weight: 800;
-  transition: background 160ms ease, color 160ms ease, transform 160ms ease;
-}
-
-.arrow::before {
-  content: "\2192";
-  font-size: 1.45rem;
-  line-height: 1;
-}
-
-.software-card:hover .arrow,
-.software-card:focus-visible .arrow {
-  background: var(--blue);
-  color: #ffffff;
-  transform: translateX(2px);
-}
-
 @media (max-width: 760px) {
   .page-shell {
     padding: 18px;
@@ -246,7 +217,7 @@ h2 {
 
   .software-card {
     min-height: 0;
-    grid-template-columns: 1fr auto;
+    grid-template-columns: 1fr;
   }
 
   .software-icon {
