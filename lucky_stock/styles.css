@@ -380,6 +380,7 @@ main {
 .simulation-form label {
   display: grid;
   gap: 8px;
+  min-width: 0;
   color: var(--text-secondary);
   font-size: 0.9rem;
   font-weight: 700;
@@ -387,6 +388,8 @@ main {
 
 .simulation-form input {
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
   min-height: 46px;
   border: 1px solid var(--border);
   border-radius: 8px;
@@ -394,6 +397,11 @@ main {
   color: var(--text-primary);
   padding: 10px 12px;
   font: inherit;
+}
+
+.simulation-form input[type="date"] {
+  appearance: none;
+  -webkit-appearance: none;
 }
 
 .simulation-form input:focus {
