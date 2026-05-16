@@ -19,8 +19,8 @@
     const isMoney = /^\d+(?:\.\d{1,2})?$/.test(value);
     const amount = Number(value);
 
-    if (!isMoney || !Number.isFinite(amount) || amount <= 100) {
-      totalCashInput.setCustomValidity("Enter an amount greater than $100 with at most two decimal places.");
+    if (!isMoney || !Number.isFinite(amount) || amount < 100) {
+      totalCashInput.setCustomValidity("Enter an amount of at least $100 with at most two decimal places.");
       return false;
     }
 
@@ -54,10 +54,10 @@
       ["Ticker", data.ticker],
       ["Simulation Period", `${data.startDate} to ${data.endDate}`],
       ["Trading Days", data.tradingDays],
-      ["Total Cash", `$${Number(data.totalCash).toLocaleString()}`],
       ["Lucky Stock Final Value", `$${Number(data.toolFinalValue).toLocaleString()}`],
       ["DCA Final Value", `$${Number(data.dcaFinalValue).toLocaleString()}`],
-      ["CPU Workers", data.cpuWorkers],
+      ["Lucky Stock Invested", `$${Number(data.toolInvested).toLocaleString()}`],
+      ["DCA Invested", `$${Number(data.dcaInvested).toLocaleString()}`],
     ];
 
     summary.innerHTML = rows
@@ -83,7 +83,7 @@
     const payload = {
       ticker: String(formData.get("ticker") || "").trim().toUpperCase(),
       startDate: String(formData.get("startDate") || ""),
-      endDate: String(formData.get("endDate") || "") || null,
+      endDate: String(formData.get("endDate") || ""),
       totalCash: Number(String(formData.get("totalCash") || "").trim()),
     };
 

@@ -34,13 +34,13 @@ app.add_middleware(
 class SimulationRequest(BaseModel):
     ticker: str = Field(..., min_length=1, max_length=12)
     startDate: str
-    endDate: str | None = None
-    totalCash: float = Field(..., gt=0, le=100000000)
+    endDate: str = Field(..., min_length=1)
+    totalCash: float = Field(..., ge=100, le=100000000)
 
 
 @app.get("/api/health")
 def health():
-    return {"status": "ok", "cpuWorkers": cpu_count}
+    return {"status": "ok", "cpus": cpu_count}
 
 
 @app.post("/api/simulate")
@@ -49,7 +49,7 @@ def simulate(payload: SimulationRequest):
         return run_simulation(
             ticker=payload.ticker,
             start_date=payload.startDate,
-            end_date=payload.endDate or None,
+            end_date=payload.endDate,
             total_cash=payload.totalCash,
             data_dir=DATA_DIR,
         )

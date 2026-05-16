@@ -1,11 +1,11 @@
 fastapi
 uvicorn[standard]
-pandas
-numpy
+numpy<2.0
+pandas<2.0
 scikit-learn
 scipy
 yfinance
-pandas-datareader
+pandas-datareader==0.10.0
 requests
 urllib3
 curl_cffi

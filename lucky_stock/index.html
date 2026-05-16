@@ -123,7 +123,7 @@
         </label>
         <label>
           <span>End Date</span>
-          <input name="endDate" type="date">
+          <input name="endDate" type="date" required>
         </label>
         <label>
           <span>Total Cash</span>
@@ -132,7 +132,7 @@
         <button type="submit" class="button button-primary">Run Simulation</button>
       </form>
 
-      <p id="simulation-status" class="simulation-status" hidden>Computing simulation...</p>
+      <p id="simulation-status" class="simulation-status" hidden>Simulating...</p>
       <p id="simulation-error" class="simulation-error" hidden></p>
       <div id="simulation-results" class="simulation-results" hidden>
         <div id="simulation-summary" class="simulation-summary" hidden></div>
@@ -141,7 +141,7 @@
           <div id="prediction-chart" class="simulation-chart"></div>
         </div>
         <div class="simulation-result-section">
-          <h3>Compare DCA with Lucky Stock's investment logic</h3>
+          <h3>Compare DCA with Lucky Stock</h3>
           <div id="strategy-chart" class="simulation-chart"></div>
         </div>
       </div>

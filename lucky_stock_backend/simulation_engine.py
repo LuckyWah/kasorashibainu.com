@@ -38,8 +38,9 @@ BOUNDS = [
 DEFAULT_CONFIG = {
     "prediction_days": 1,
     "entry_drawdown": 0.10,
+    "exit_drawdown": 0.03,
     "bear_drawdown": 0.20,
-    "max_daily_fraction": 0.03,
+    "max_daily_fraction": 0.05,
     "min_daily_investment": 0.0,
     "cash_deployment_penalty": 0.20,
     "rolling_opt_window": 120,
@@ -81,6 +82,16 @@ def classify_regime(drawdown, config):
         return "correction", True
 
     return "normal", False
+
+
+def compute_metrics(cash, shares, initial_cash, price):
+    invested_total = initial_cash - cash
+    stock_value = shares * price
+    portfolio_value = stock_value + cash
+    avg_cost = invested_total / shares if shares > 0 else 0.0
+    roic = stock_value / invested_total - 1 if invested_total > 0 else 0.0
+
+    return invested_total, stock_value, portfolio_value, avg_cost, roic
 
 
 def simulate_window_for_theta(window_df, theta, initial_cash, config):
@@ -186,47 +197,97 @@ def build_prediction_chart(plot_df, ticker, prediction_days):
             },
         ],
         "layout": {
-            "title": f"{ticker} ML Prediction vs Actual",
             "paper_bgcolor": "#151b2f",
             "plot_bgcolor": "#151b2f",
             "font": {"color": "#ffffff"},
             "xaxis": {"title": "Date", "gridcolor": "#2a3347"},
             "yaxis": {"title": "Price ($)", "gridcolor": "#2a3347"},
             "legend": {"orientation": "h"},
-            "margin": {"l": 56, "r": 24, "t": 56, "b": 48},
+            "margin": {"l": 56, "r": 24, "t": 24, "b": 48},
         },
     }
 
 
-def build_strategy_chart(result_df, ticker):
+def build_strategy_chart(result_df):
+    metric_options = [
+        ("portfolio_value", "Portfolio Value ($)"),
+        ("stock_value", "Stock Value ($)"),
+        ("avg_cost", "Average Cost ($)"),
+        ("daily_investment", "Daily Investment ($)"),
+        ("cash", "Remaining Cash ($)"),
+        ("return_on_invested_capital", "Return on Invested Capital"),
+    ]
+    data = []
+
+    for metric_index, (metric, _) in enumerate(metric_options):
+        visible = metric_index == 0
+        data.extend(
+            [
+                {
+                    "type": "scatter",
+                    "mode": "lines",
+                    "name": "Lucky Stock",
+                    "x": result_df["date"].tolist(),
+                    "y": result_df[f"tool_{metric}"].round(4).tolist(),
+                    "line": {"color": "#00d9ff", "width": 3},
+                    "visible": True if visible else False,
+                    "legendgroup": "Lucky Stock",
+                    "showlegend": visible,
+                },
+                {
+                    "type": "scatter",
+                    "mode": "lines",
+                    "name": "DCA",
+                    "x": result_df["date"].tolist(),
+                    "y": result_df[f"dca_{metric}"].round(4).tolist(),
+                    "line": {"color": "#ffd700", "width": 3},
+                    "visible": True if visible else False,
+                    "legendgroup": "DCA",
+                    "showlegend": visible,
+                },
+            ]
+        )
+
+    buttons = []
+    for metric_index, (_, y_title) in enumerate(metric_options):
+        visible = [False] * (len(metric_options) * 2)
+        visible[metric_index * 2] = True
+        visible[metric_index * 2 + 1] = True
+        buttons.append(
+            {
+                "label": y_title.replace(" ($)", ""),
+                "method": "update",
+                "args": [
+                    {"visible": visible, "showlegend": [i == metric_index * 2 or i == metric_index * 2 + 1 for i in range(len(visible))]},
+                    {"yaxis": {"title": y_title, "gridcolor": "#2a3347"}},
+                ],
+            }
+        )
+
     return {
-        "data": [
-            {
-                "type": "scatter",
-                "mode": "lines",
-                "name": "Lucky Stock Tool",
-                "x": result_df["date"].tolist(),
-                "y": result_df["tool_value"].round(2).tolist(),
-                "line": {"color": "#00d9ff", "width": 3},
-            },
-            {
-                "type": "scatter",
-                "mode": "lines",
-                "name": "DCA",
-                "x": result_df["date"].tolist(),
-                "y": result_df["dca_value"].round(2).tolist(),
-                "line": {"color": "#ffd700", "width": 3},
-            },
-        ],
+        "data": data,
         "layout": {
-            "title": f"{ticker} Strategy Simulation",
             "paper_bgcolor": "#151b2f",
             "plot_bgcolor": "#151b2f",
             "font": {"color": "#ffffff"},
             "xaxis": {"title": "Date", "gridcolor": "#2a3347"},
             "yaxis": {"title": "Portfolio Value ($)", "gridcolor": "#2a3347"},
             "legend": {"orientation": "h"},
-            "margin": {"l": 56, "r": 24, "t": 56, "b": 48},
+            "updatemenus": [
+                {
+                    "buttons": buttons,
+                    "direction": "right",
+                    "showactive": True,
+                    "x": 0,
+                    "xanchor": "left",
+                    "y": 1.18,
+                    "yanchor": "top",
+                    "bgcolor": "#0a0e27",
+                    "bordercolor": "#2a3347",
+                    "font": {"color": "#ffffff"},
+                }
+            ],
+            "margin": {"l": 56, "r": 24, "t": 84, "b": 48},
         },
     }
 
@@ -256,46 +317,57 @@ def run_simulation(ticker, start_date, end_date, total_cash, data_dir="datasets"
             raise ValueError("Start date is after the available market data.")
         start_ts = later_dates[0]
 
-    end_ts = pd.Timestamp(end_date) if end_date else feature_df.index[-1]
+    end_ts = pd.Timestamp(end_date)
+    if end_ts < start_ts:
+        raise ValueError("End date must be after the start date.")
+
     sim_df = feature_df.loc[start_ts:end_ts].copy()
 
     if sim_df.empty:
         raise ValueError("No market rows found for that simulation period.")
-
-    reference_high = feature_df.loc[:start_ts, "close"].max()
-    recovery_rows = sim_df[sim_df["close"] >= reference_high]
-    if end_date is None and len(recovery_rows) > 0:
-        sim_df = sim_df.loc[: recovery_rows.index[0]].copy()
 
     if len(sim_df) < 2:
         raise ValueError("Simulation period is too short.")
 
     tool_cash = float(total_cash)
     tool_shares = 0.0
-    dca_cash = float(total_cash)
-    dca_shares = 0.0
-    dca_daily = float(total_cash) / len(sim_df)
     previous_theta = None
-    rows = []
+    in_correction_mode = False
+    reference_high = sim_df["close"].iloc[0]
+    tool_rows = []
 
-    for current_date, row in sim_df.iterrows():
+    for i, (current_date, row) in enumerate(sim_df.iterrows()):
         price = float(row["close"])
-        history_df = feature_df.loc[:current_date].tail(config["rolling_opt_window"]).copy()
+
+        if not in_correction_mode and price > reference_high:
+            reference_high = price
+
+        drawdown = (reference_high - price) / reference_high
+
+        if not in_correction_mode and drawdown >= config["entry_drawdown"]:
+            in_correction_mode = True
+
+        if in_correction_mode and drawdown <= config["exit_drawdown"]:
+            in_correction_mode = False
+
+        history_start = max(0, i - config["rolling_opt_window"])
+        history_df = sim_df.iloc[history_start:i].copy()
 
         if len(history_df) >= 30:
-            theta = solve_theta_for_day(history_df, tool_cash, config)
-            if previous_theta is not None:
+            theta_raw = solve_theta_for_day(history_df, float(total_cash), config)
+            if previous_theta is None:
+                theta = theta_raw
+            else:
                 smoothing = config["theta_smoothing"]
-                theta = smoothing * theta + (1 - smoothing) * previous_theta
+                theta = (1.0 - smoothing) * previous_theta + smoothing * theta_raw
             previous_theta = theta
+        elif previous_theta is not None:
+            theta = previous_theta
         else:
             theta = np.array([0.0, 0.0, 0.0, 0.0])
 
-        drawdown = float(row["drawdown"])
-        _, in_buy_zone = classify_regime(drawdown, config)
-
         tool_invest = 0.0
-        if in_buy_zone and tool_cash > 0:
+        if in_correction_mode and tool_cash > 0:
             g0, a, b, c = theta
             daily_fraction = (
                 g0
@@ -310,27 +382,65 @@ def run_simulation(ticker, start_date, end_date, total_cash, data_dir="datasets"
                 tool_cash,
             )
 
-        dca_invest = min(dca_daily, dca_cash)
         tool_shares += tool_invest / price if price > 0 else 0.0
-        dca_shares += dca_invest / price if price > 0 else 0.0
         tool_cash -= tool_invest
-        dca_cash -= dca_invest
+        invested_total, stock_value, portfolio_value, avg_cost, roic = compute_metrics(
+            tool_cash,
+            tool_shares,
+            float(total_cash),
+            price,
+        )
 
-        rows.append(
+        tool_rows.append(
             {
                 "date": current_date.strftime("%Y-%m-%d"),
                 "close": price,
-                "tool_value": tool_cash + tool_shares * price,
-                "dca_value": dca_cash + dca_shares * price,
-                "tool_invested": float(total_cash) - tool_cash,
-                "dca_invested": float(total_cash) - dca_cash,
+                "tool_daily_investment": tool_invest,
+                "tool_cash": tool_cash,
+                "tool_shares": tool_shares,
+                "tool_invested_total": invested_total,
+                "tool_stock_value": stock_value,
+                "tool_portfolio_value": portfolio_value,
+                "tool_avg_cost": avg_cost,
+                "tool_return_on_invested_capital": roic,
             }
         )
 
-        if tool_cash <= 0 and dca_cash <= 0:
-            continue
+    tool_df = pd.DataFrame(tool_rows)
+    fair_investment_cash = float(tool_df["tool_invested_total"].iloc[-1])
+    tool_df["tool_cash"] = (fair_investment_cash - tool_df["tool_invested_total"]).clip(lower=0.0)
+    tool_df["tool_portfolio_value"] = tool_df["tool_stock_value"] + tool_df["tool_cash"]
 
-    result_df = pd.DataFrame(rows)
+    dca_cash = fair_investment_cash
+    dca_shares = 0.0
+    dca_daily = fair_investment_cash / len(tool_df) if fair_investment_cash > 0 else 0.0
+    dca_rows = []
+
+    for _, row in tool_df.iterrows():
+        price = float(row["close"])
+        dca_invest = min(dca_daily, dca_cash)
+        dca_shares += dca_invest / price if price > 0 else 0.0
+        dca_cash -= dca_invest
+        invested_total, stock_value, portfolio_value, avg_cost, roic = compute_metrics(
+            dca_cash,
+            dca_shares,
+            fair_investment_cash,
+            price,
+        )
+        dca_rows.append(
+            {
+                "dca_daily_investment": dca_invest,
+                "dca_cash": dca_cash,
+                "dca_shares": dca_shares,
+                "dca_invested_total": invested_total,
+                "dca_stock_value": stock_value,
+                "dca_portfolio_value": portfolio_value,
+                "dca_avg_cost": avg_cost,
+                "dca_return_on_invested_capital": roic,
+            }
+        )
+
+    result_df = pd.concat([tool_df.reset_index(drop=True), pd.DataFrame(dca_rows)], axis=1)
     prediction_df = sim_df.dropna(subset=["actual_future_price", "predicted_future_price"]).copy()
     prediction_df["date"] = prediction_df.index.strftime("%Y-%m-%d")
 
@@ -339,16 +449,14 @@ def run_simulation(ticker, start_date, end_date, total_cash, data_dir="datasets"
         "startDate": result_df["date"].iloc[0],
         "endDate": result_df["date"].iloc[-1],
         "tradingDays": int(len(result_df)),
-        "totalCash": round(float(total_cash), 2),
-        "toolFinalValue": round(float(result_df["tool_value"].iloc[-1]), 2),
-        "dcaFinalValue": round(float(result_df["dca_value"].iloc[-1]), 2),
-        "toolInvested": round(float(result_df["tool_invested"].iloc[-1]), 2),
-        "dcaInvested": round(float(result_df["dca_invested"].iloc[-1]), 2),
-        "cpuWorkers": CPU_COUNT,
+        "toolFinalValue": round(float(result_df["tool_portfolio_value"].iloc[-1]), 2),
+        "dcaFinalValue": round(float(result_df["dca_portfolio_value"].iloc[-1]), 2),
+        "toolInvested": round(float(result_df["tool_invested_total"].iloc[-1]), 2),
+        "dcaInvested": round(float(result_df["dca_invested_total"].iloc[-1]), 2),
     }
 
     return {
         "summary": summary,
         "predictionChart": build_prediction_chart(prediction_df, ticker, prediction_days),
-        "strategyChart": build_strategy_chart(result_df, ticker),
+        "strategyChart": build_strategy_chart(result_df),
     }
