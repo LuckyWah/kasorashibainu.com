@@ -296,8 +296,8 @@ def run_simulation(ticker, start_date, end_date, total_cash, data_dir="datasets"
     if sim_df.empty:
         raise ValueError("No market rows found for that simulation period.")
 
-    if len(sim_df) < 2:
-        raise ValueError("Simulation period is too short.")
+    if len(sim_df) < 20:
+        raise ValueError("Simulation period must include at least 20 trading days.")
 
     tool_cash = float(total_cash)
     tool_shares = 0.0

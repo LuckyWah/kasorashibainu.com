@@ -470,6 +470,23 @@ main {
   gap: 24px;
 }
 
+.simulation-outcome {
+  margin: 0;
+  padding: 18px 20px;
+  border: 1px solid rgba(255, 215, 0, 0.38);
+  border-left: 4px solid var(--accent);
+  border-radius: 8px;
+  background: rgba(255, 215, 0, 0.08);
+  color: var(--text-primary);
+  font-size: 1.08rem;
+  font-weight: 800;
+  line-height: 1.55;
+}
+
+.simulation-outcome[hidden] {
+  display: none;
+}
+
 .simulation-result-section h3 {
   margin: 0 0 14px;
   color: var(--primary);

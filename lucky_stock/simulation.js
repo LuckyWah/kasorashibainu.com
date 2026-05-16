@@ -3,6 +3,7 @@
   const status = document.getElementById("simulation-status");
   const error = document.getElementById("simulation-error");
   const results = document.getElementById("simulation-results");
+  const outcome = document.getElementById("simulation-outcome");
   const summary = document.getElementById("simulation-summary");
   const predictionChart = document.getElementById("prediction-chart");
   const strategyChart = document.getElementById("strategy-chart");
@@ -14,6 +15,8 @@
 
   const apiBase = (window.LUCKY_STOCK_API_BASE || "").replace(/\/$/, "");
   const totalCashInput = form.elements.totalCash;
+  const startDateInput = form.elements.startDate;
+  const endDateInput = form.elements.endDate;
   const strategyMetricTitles = [
     "Portfolio Value ($)",
     "Stock Value ($)",
@@ -37,6 +40,57 @@
     return true;
   }
 
+  function parseLocalDate(value) {
+    const [year, month, day] = String(value || "").split("-").map(Number);
+
+    if (!year || !month || !day) {
+      return null;
+    }
+
+    return new Date(year, month - 1, day);
+  }
+
+  function todayLocalDate() {
+    const now = new Date();
+    return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  }
+
+  function validateDates() {
+    const startDate = parseLocalDate(startDateInput.value);
+    const endDate = parseLocalDate(endDateInput.value);
+    const today = todayLocalDate();
+
+    startDateInput.setCustomValidity("");
+    endDateInput.setCustomValidity("");
+
+    if (!startDate || !endDate) {
+      return true;
+    }
+
+    if (startDate > today) {
+      startDateInput.setCustomValidity("Start date must be today or a past date.");
+      return false;
+    }
+
+    if (endDate > today) {
+      endDateInput.setCustomValidity("End date must be today or a past date.");
+      return false;
+    }
+
+    if (endDate <= startDate) {
+      endDateInput.setCustomValidity("End date must be later than start date.");
+      return false;
+    }
+
+    const days = (endDate - startDate) / 86400000;
+    if (days < 28) {
+      endDateInput.setCustomValidity("Choose a longer period so the simulation includes at least 20 trading days.");
+      return false;
+    }
+
+    return true;
+  }
+
   function setLoading(isLoading) {
     const button = form.querySelector("button[type='submit']");
     button.disabled = isLoading;
@@ -52,6 +106,8 @@
     error.hidden = true;
     error.textContent = "";
     results.hidden = true;
+    outcome.hidden = true;
+    outcome.textContent = "";
     summary.hidden = true;
     summary.innerHTML = "";
     predictionChart.innerHTML = "";
@@ -82,6 +138,18 @@
   }
 
   function renderSummary(data) {
+    const difference = Number(data.toolFinalValue) - Number(data.dcaFinalValue);
+    const differenceText = Math.abs(difference).toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+    const comparisonText = difference >= 0
+      ? `$${differenceText} more than DCA`
+      : `$${differenceText} less than DCA`;
+
+    outcome.textContent = `By using Lucky Stock for daily investment in ${data.ticker} from ${formatDisplayDate(data.startDate)} to ${formatDisplayDate(data.endDate)}, the simulated final value would be $${Number(data.toolFinalValue).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}, ${comparisonText}.`;
+    outcome.hidden = false;
+
     const rows = [
       ["Ticker", data.ticker],
       ["Simulation Period", `${formatDisplayDate(data.startDate)} to ${formatDisplayDate(data.endDate)}`],
@@ -98,12 +166,14 @@
   }
 
   totalCashInput.addEventListener("input", validateTotalCash);
+  startDateInput.addEventListener("input", validateDates);
+  endDateInput.addEventListener("input", validateDates);
   strategyMetric.addEventListener("change", updateStrategyMetric);
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
 
-    if (!validateTotalCash() || !form.reportValidity()) {
+    if (!validateTotalCash() || !validateDates() || !form.reportValidity()) {
       return;
     }
 
