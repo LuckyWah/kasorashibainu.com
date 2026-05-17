@@ -28,6 +28,23 @@ The simulation uses all available CPU cores through:
 
 Use `--workers 1` because each simulation already consumes the machine. Multiple Uvicorn workers can make simultaneous requests fight for CPU and memory.
 
+## Long Simulation Timeouts
+
+The frontend waits up to 15 minutes for `/api/simulate`. Uvicorn does not add a normal request-duration timeout, but a reverse proxy in front of it often does.
+
+For Nginx, set the API proxy timeout to at least 15 minutes:
+
+```nginx
+location /api/ {
+    proxy_pass http://127.0.0.1:8051;
+    proxy_read_timeout 900s;
+    proxy_send_timeout 900s;
+    proxy_connect_timeout 900s;
+}
+```
+
+If the site is behind a platform with a fixed request timeout, that platform may still cut off long simulations before the backend finishes.
+
 ## Frontend API URL
 
 If the API is behind the same domain as the website, proxy `/api/*` to this server and no frontend change is needed.

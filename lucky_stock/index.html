@@ -110,7 +110,7 @@
     <section id="simulation" class="simulation">
       <div class="section-heading">
         <h2>Simulation</h2>
-        <p>Test how Lucky Stock would have performed over a historical period. Enter a past start date, a past end date, a ticker, and an investment amount to compare the tool's simulated outcome with DCA.</p>
+        <p>Test how Lucky Stock would have performed over a historical period. Enter a past start date, a past end date, a ticker, an investment amount, and aggressiveness to compare the tool's simulated outcome with DCA.</p>
       </div>
 
       <form id="simulation-form" class="simulation-form">
@@ -129,6 +129,26 @@
         <label>
           <span>Total Cash</span>
           <input name="totalCash" type="text" inputmode="decimal" required>
+        </label>
+        <label class="field-with-help">
+          <span class="field-label-row">
+            Aggressiveness
+            <button
+              class="help-trigger"
+              type="button"
+              aria-label="Aggressiveness help"
+              aria-describedby="aggressiveness-help"
+            >?</button>
+          </span>
+          <select name="aggressiveness" required>
+            <option value="0.5">0.5 - Conservative</option>
+            <option value="1" selected>1 - Balanced</option>
+            <option value="2">2 - Aggressive</option>
+            <option value="3">3 - Very aggressive</option>
+          </select>
+          <span id="aggressiveness-help" class="help-tooltip" role="tooltip">
+            Controls how far the suggested amount can deviate from normal DCA. Higher the number, more sensitive the suggested amount is to market signals.
+          </span>
         </label>
         <button type="submit" class="button button-primary">Run Simulation</button>
       </form>

@@ -241,6 +241,10 @@ function toggleChat() {
 }
 
 function formatMessage(text) {
+    text = String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
     // Handle inline code
     text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
     // Bold (**bold**)
@@ -277,19 +281,29 @@ async function sendMessage() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ message })
         });
-        const data = await res.json();
+        const contentType = res.headers.get('content-type') || '';
+        const data = contentType.includes('application/json') ? await res.json() : {};
         document.getElementById(loadingId).remove();
+
+        if (!res.ok) {
+            throw new Error(data.error || data.message || `Chatbot request failed (${res.status})`);
+        }
+
+        const reply = data.response || data.reply || data.message || data.answer;
+        if (!reply) {
+            throw new Error('Chatbot response did not include a reply.');
+        }
         
         const botMsg = document.createElement('div');
         botMsg.className = 'message bot';
-        botMsg.innerHTML = formatMessage(data.response || "You've reached the limit. Please come back later.");
+        botMsg.innerHTML = formatMessage(reply);
         chat.appendChild(botMsg);
         chat.scrollTop = chat.scrollHeight;
     } catch (err) {
         document.getElementById(loadingId).remove();
         const errorMsg = document.createElement('div');
         errorMsg.className = 'message error';
-        errorMsg.textContent = 'Error contacting chatbot';
+        errorMsg.textContent = err.message || 'Error contacting chatbot';
         chat.appendChild(errorMsg);
         chat.scrollTop = chat.scrollHeight;
     }

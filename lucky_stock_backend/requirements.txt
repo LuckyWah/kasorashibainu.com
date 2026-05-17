@@ -1,6 +1,7 @@
 fastapi
 uvicorn[standard]
 numpy<2.0
+numba
 pandas<2.0
 scikit-learn
 scipy

@@ -15,8 +15,10 @@
 
   const apiBase = (window.LUCKY_STOCK_API_BASE || "").replace(/\/$/, "");
   const totalCashInput = form.elements.totalCash;
+  const aggressivenessInput = form.elements.aggressiveness;
   const startDateInput = form.elements.startDate;
   const endDateInput = form.elements.endDate;
+  const SIMULATION_TIMEOUT_MS = 15 * 60 * 1000;
   const strategyMetricTitles = [
     "Portfolio Value ($)",
     "Stock Value ($)",
@@ -55,6 +57,18 @@
     }
 
     totalCashInput.setCustomValidity("");
+    return true;
+  }
+
+  function validateAggressiveness() {
+    const amount = Number(aggressivenessInput.value);
+
+    if (!Number.isFinite(amount) || amount < 0.5 || amount > 3) {
+      aggressivenessInput.setCustomValidity("Choose aggressiveness from 0.5 to 3.");
+      return false;
+    }
+
+    aggressivenessInput.setCustomValidity("");
     return true;
   }
 
@@ -184,6 +198,7 @@
   }
 
   totalCashInput.addEventListener("input", validateTotalCash);
+  aggressivenessInput.addEventListener("input", validateAggressiveness);
   totalCashInput.addEventListener("blur", () => {
     formatMoneyInput();
     validateTotalCash();
@@ -195,7 +210,7 @@
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
 
-    if (!validateTotalCash() || !validateDates() || !form.reportValidity()) {
+    if (!validateTotalCash() || !validateAggressiveness() || !validateDates() || !form.reportValidity()) {
       return;
     }
 
@@ -208,13 +223,20 @@
       startDate: String(formData.get("startDate") || ""),
       endDate: String(formData.get("endDate") || ""),
       totalCash: Number(normalizeMoney(formData.get("totalCash"))),
+      aggressiveness: Number(formData.get("aggressiveness")),
     };
+
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(() => {
+      controller.abort();
+    }, SIMULATION_TIMEOUT_MS);
 
     try {
       const response = await fetch(`${apiBase}/api/simulate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
+        signal: controller.signal,
       });
 
       const contentType = response.headers.get("content-type") || "";
@@ -243,8 +265,13 @@
         updateStrategyMetric();
       });
     } catch (err) {
-      showError(err.message || "Simulation failed.");
+      if (err.name === "AbortError") {
+        showError("Simulation timed out after 15 minutes. Try a shorter period or restart the backend with a longer proxy/server timeout.");
+      } else {
+        showError(err.message || "Simulation failed.");
+      }
     } finally {
+      window.clearTimeout(timeoutId);
       setLoading(false);
     }
   });

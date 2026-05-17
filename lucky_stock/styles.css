@@ -378,7 +378,7 @@ main {
 
 .simulation-form {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr)) auto;
+  grid-template-columns: repeat(5, minmax(0, 1fr)) auto;
   gap: 14px;
   align-items: end;
   margin: 0 0 24px;
@@ -399,7 +399,8 @@ main {
   font-weight: 700;
 }
 
-.simulation-form input {
+.simulation-form input,
+.simulation-form select {
   width: 100%;
   max-width: 100%;
   min-width: 0;
@@ -412,14 +413,73 @@ main {
   font: inherit;
 }
 
+.simulation-form select {
+  cursor: pointer;
+}
+
 .simulation-form input[type="date"] {
   appearance: none;
   -webkit-appearance: none;
 }
 
-.simulation-form input:focus {
+.simulation-form input:focus,
+.simulation-form select:focus {
   border-color: var(--primary);
   outline: none;
+}
+
+.field-with-help {
+  position: relative;
+}
+
+.field-label-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.help-trigger {
+  display: inline;
+  width: auto;
+  height: auto;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--primary);
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 800;
+  line-height: 1;
+  cursor: help;
+}
+
+.help-trigger:hover,
+.help-trigger:focus-visible {
+  color: var(--accent);
+  outline: none;
+}
+
+.help-tooltip {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 8px);
+  z-index: 20;
+  display: none;
+  width: min(320px, 80vw);
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-darker);
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  font-weight: 600;
+  line-height: 1.45;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35);
+}
+
+.field-with-help:hover .help-tooltip,
+.field-with-help:focus-within .help-tooltip {
+  display: block;
 }
 
 .simulation-status,
@@ -752,7 +812,8 @@ main {
   }
 
   .metric-select-label,
-  .metric-select-label select {
+  .metric-select-label select,
+  .help-tooltip {
     width: 100%;
     min-width: 0;
   }
