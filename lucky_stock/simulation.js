@@ -18,6 +18,7 @@
   const startDateInput = form.elements.startDate;
   const endDateInput = form.elements.endDate;
   const SIMULATION_TIMEOUT_MS = 15 * 60 * 1000;
+  const MAX_SIMULATION_DAYS = 366;
   const strategyMetricTitles = [
     "Portfolio Value ($)",
     "Stock Value ($)",
@@ -107,6 +108,11 @@
       return false;
     }
 
+    if (days > MAX_SIMULATION_DAYS) {
+      endDateInput.setCustomValidity("Choose a simulation period of 1 year or less.");
+      return false;
+    }
+
     return true;
   }
 
@@ -146,6 +152,10 @@
 
     if (/simulation period must include at least 20 trading days/i.test(text)) {
       return "Please choose a longer date range. The simulation needs at least 20 trading days.";
+    }
+
+    if (/simulation period must be 1 year or less/i.test(text)) {
+      return "Please choose a simulation period of 1 year or less.";
     }
 
     if (/simulation api request failed/i.test(text)) {
