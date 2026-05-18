@@ -204,7 +204,7 @@
       ? `$${differenceText} more than DCA`
       : `$${differenceText} less than DCA`;
 
-    outcome.textContent = `By using Lucky Stock for daily investment in ${data.ticker} from ${formatDisplayDate(data.startDate)} to ${formatDisplayDate(data.endDate)}, your portfolio would grow to $${Number(data.toolFinalValue).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}, ${comparisonText}.`;
+    outcome.textContent = `By using Lucky Stock for daily investment in ${data.ticker} from ${formatDisplayDate(data.startDate)} to ${formatDisplayDate(data.endDate)}, your portfolio would grow to $${Number(data.toolFinalValue).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}, which is ${comparisonText}.`;
     outcome.hidden = false;
 
     const rows = [
