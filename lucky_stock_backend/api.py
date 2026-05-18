@@ -36,7 +36,6 @@ class SimulationRequest(BaseModel):
     startDate: str
     endDate: str = Field(..., min_length=1)
     totalCash: float = Field(..., ge=100, le=100000000)
-    aggressiveness: float = Field(1.0, ge=0.0, le=3.0)
 
 
 @app.get("/api/health")
@@ -53,7 +52,6 @@ def simulate(payload: SimulationRequest):
             end_date=payload.endDate,
             total_cash=payload.totalCash,
             data_dir=DATA_DIR,
-            aggressiveness=payload.aggressiveness,
         )
     except Exception as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc

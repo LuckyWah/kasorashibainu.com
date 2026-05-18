@@ -34,14 +34,10 @@ FEATURES = [
 ]
 
 BOUNDS = [
-    (0.0000, 10.0000),  # alpha_1: bull trend coefficient
-    (0.0000, 10.0000),  # alpha_2: bull acceleration coefficient
-    (0.0000, 10.0000),  # alpha_3: bull predicted-return coefficient
-    (0.0000, 10.0000),  # beta_1: bear drawdown coefficient
-    (0.0000, 10.0000),  # beta_2: bear volatility penalty coefficient
-    (0.0000, 10.0000),  # eta_1: sideways short-dip coefficient
-    (0.0000, 10.0000),  # eta_2: sideways trend penalty coefficient
-    (0.1000, 10.0000),  # kappa: cash-reserve sensitivity
+    (0.0000, 0.0200),
+    (0.0000, 0.3000),
+    (0.0000, 5.0000),
+    (0.0000, 0.1000),
 ]
 
 DEFAULT_CONFIG = {
@@ -49,15 +45,6 @@ DEFAULT_CONFIG = {
     "max_daily_fraction": 0.05,
     "min_daily_investment": 0.0,
     "cash_deployment_penalty": 0.20,
-
-    # Regime-weighted adaptive DCA settings.
-    # aggressiveness = 0 gives pure DCA; larger values allow stronger deviation from DCA.
-    "aggressiveness": 1.0,
-    "cash_aggressiveness": 0.50,
-    "regime_temperature": 1.0,
-    "drawdown_power": 1.5,
-    "short_drawdown_window": 20,
-    "min_base_fraction": 0.25,
     "rolling_opt_window": 120,
 
     # Faster realistic backtest settings.
@@ -97,21 +84,6 @@ class ThetaObjective:
             "volatilities",
             self.window_df["volatility_20d"].to_numpy(dtype=float),
         )
-        object.__setattr__(
-            self,
-            "trend_strengths",
-            self.window_df["regime_trend"].to_numpy(dtype=float),
-        )
-        object.__setattr__(
-            self,
-            "trend_accelerations",
-            self.window_df["regime_acceleration"].to_numpy(dtype=float),
-        )
-        object.__setattr__(
-            self,
-            "short_drawdowns",
-            self.window_df["short_drawdown"].to_numpy(dtype=float),
-        )
 
     def __call__(self, theta):
         return simulate_arrays_for_theta(
@@ -122,9 +94,6 @@ class ThetaObjective:
             self.drawdowns,
             self.predicted_returns,
             self.volatilities,
-            self.trend_strengths,
-            self.trend_accelerations,
-            self.short_drawdowns,
         )
 
 
@@ -150,27 +119,6 @@ def compute_metrics(cash, shares, initial_cash, price):
     return invested_total, stock_value, portfolio_value, avg_cost, roic
 
 
-def add_regime_features(feature_df, config):
-    """Add regime features shared by simulation and theta optimization."""
-    feature_df = feature_df.copy()
-
-    ma20 = feature_df["close"].rolling(20, min_periods=5).mean()
-    ma60 = feature_df["close"].rolling(60, min_periods=20).mean()
-
-    feature_df["regime_trend"] = (ma20 - ma60) / ma60
-    feature_df["regime_acceleration"] = feature_df["regime_trend"].diff()
-
-    short_window = int(config.get("short_drawdown_window", 20))
-    short_high = feature_df["close"].rolling(short_window, min_periods=5).max()
-    feature_df["short_drawdown"] = (short_high - feature_df["close"]) / short_high
-
-    regime_cols = ["regime_trend", "regime_acceleration", "short_drawdown"]
-    feature_df[regime_cols] = feature_df[regime_cols].replace([np.inf, -np.inf], np.nan)
-    feature_df[regime_cols] = feature_df[regime_cols].fillna(0.0)
-
-    return feature_df
-
-
 def simulate_arrays_for_theta(
     theta,
     initial_cash,
@@ -179,9 +127,6 @@ def simulate_arrays_for_theta(
     drawdowns,
     predicted_returns,
     volatilities,
-    trend_strengths,
-    trend_accelerations,
-    short_drawdowns,
 ):
     return _simulate_arrays_for_theta(
         theta,
@@ -189,126 +134,10 @@ def simulate_arrays_for_theta(
         config["max_daily_fraction"],
         config["min_daily_investment"],
         config["cash_deployment_penalty"],
-        config["aggressiveness"],
-        config["cash_aggressiveness"],
-        config["regime_temperature"],
-        config["drawdown_power"],
-        config["min_base_fraction"],
         prices,
         drawdowns,
         predicted_returns,
         volatilities,
-        trend_strengths,
-        trend_accelerations,
-        short_drawdowns,
-    )
-
-
-def _softmax3(z1, z2, z3, temperature):
-    temperature = max(temperature, 1e-8)
-    z1 = z1 / temperature
-    z2 = z2 / temperature
-    z3 = z3 / temperature
-
-    zmax = max(z1, z2, z3)
-    e1 = np.exp(z1 - zmax)
-    e2 = np.exp(z2 - zmax)
-    e3 = np.exp(z3 - zmax)
-    total = e1 + e2 + e3
-
-    return e1 / total, e2 / total, e3 / total
-
-
-def _compute_regime_investment(
-    theta,
-    cash,
-    initial_cash,
-    price,
-    day_index,
-    n_days,
-    max_daily_fraction,
-    min_daily_investment,
-    aggressiveness,
-    cash_aggressiveness,
-    regime_temperature,
-    drawdown_power,
-    min_base_fraction,
-    drawdown,
-    predicted_return,
-    volatility,
-    trend_strength,
-    trend_acceleration,
-    short_drawdown,
-):
-    (
-        alpha_trend,
-        alpha_accel,
-        alpha_pred,
-        beta_drawdown,
-        beta_volatility,
-        eta_short_dip,
-        eta_trend_penalty,
-        kappa_cash,
-    ) = theta
-
-    remaining_days = max(1, n_days - day_index)
-    base_invest = cash / remaining_days
-
-    c_dca = initial_cash * remaining_days / n_days
-    if c_dca <= 0:
-        cash_signal = 0.0
-    else:
-        cash_deviation = cash / c_dca - 1.0
-        cash_signal = np.tanh(kappa_cash * cash_deviation)
-
-    # Regime scores. These are hand-designed, while opportunity intensities are optimized.
-    z_bull = trend_strength + trend_acceleration + predicted_return
-    z_bear = drawdown + volatility - trend_strength
-    z_side = (1.0 - abs(trend_strength)) + (1.0 - drawdown)
-
-    w_bull, w_bear, w_side = _softmax3(z_bull, z_bear, z_side, regime_temperature)
-
-    # Regime-specific opportunity signals.
-    s_bull = np.tanh(
-        alpha_trend * trend_strength
-        + alpha_accel * trend_acceleration
-        + alpha_pred * predicted_return
-    )
-
-    s_bear = np.tanh(
-        beta_drawdown * (drawdown ** drawdown_power)
-        - beta_volatility * volatility
-    )
-
-    s_side = np.tanh(
-        eta_short_dip * short_drawdown
-        - eta_trend_penalty * trend_strength
-    )
-
-    market_signal = w_bull * s_bull + w_bear * s_bear + w_side * s_side
-
-    multiplier = 1.0 + aggressiveness * market_signal + cash_aggressiveness * cash_signal
-    multiplier = max(min_base_fraction, multiplier)
-
-    invest = base_invest * multiplier
-
-    # The daily cap cannot block the baseline, otherwise the strategy may fail to deploy all cash.
-    max_invest = max(max_daily_fraction * cash, base_invest)
-    invest = min(invest, max_invest)
-    invest = min(max(invest, min_daily_investment), cash)
-
-    return (
-        invest,
-        base_invest,
-        multiplier,
-        w_bull,
-        w_bear,
-        w_side,
-        s_bull,
-        s_bear,
-        s_side,
-        cash_signal,
-        market_signal,
     )
 
 
@@ -318,56 +147,39 @@ def _simulate_arrays_for_theta_python(
     max_daily_fraction,
     min_daily_investment,
     cash_deployment_penalty,
-    aggressiveness,
-    cash_aggressiveness,
-    regime_temperature,
-    drawdown_power,
-    min_base_fraction,
     prices,
     drawdowns,
     predicted_returns,
     volatilities,
-    trend_strengths,
-    trend_accelerations,
-    short_drawdowns,
 ):
+    g0, a, b, c = theta
     cash = initial_cash
     shares = 0.0
-    n_days = len(prices)
 
-    for i in range(n_days):
-        price = prices[i]
-
+    for price, drawdown, predicted_return, volatility in zip(
+        prices,
+        drawdowns,
+        predicted_returns,
+        volatilities,
+    ):
         if cash <= 0:
             invest = 0.0
         else:
-            invest = _compute_regime_investment(
-                theta,
-                cash,
-                initial_cash,
-                price,
-                i,
-                n_days,
-                max_daily_fraction,
-                min_daily_investment,
-                aggressiveness,
-                cash_aggressiveness,
-                regime_temperature,
-                drawdown_power,
-                min_base_fraction,
-                drawdowns[i],
-                predicted_returns[i],
-                volatilities[i],
-                trend_strengths[i],
-                trend_accelerations[i],
-                short_drawdowns[i],
-            )[0]
+            daily_fraction = g0 + a * drawdown + b * predicted_return - c * volatility
+            daily_fraction = max(0.0, daily_fraction)
+            daily_fraction = min(daily_fraction, max_daily_fraction)
+            invest = min(max(cash * daily_fraction, min_daily_investment), cash)
 
         shares += invest / price if price > 0 else 0.0
         cash -= invest
 
+    invested_total = initial_cash - cash
     stock_value = shares * prices[-1]
     portfolio_value = stock_value + cash
+
+    # Portfolio growth objective:
+    # G(theta) = V(theta) / C0 - 1
+    # This optimizes total portfolio growth instead of return on invested capital.
     portfolio_growth = portfolio_value / initial_cash - 1.0
 
     cash_ratio = cash / initial_cash
@@ -377,8 +189,6 @@ def _simulate_arrays_for_theta_python(
 
 
 if njit is not None:
-    _softmax3 = njit(cache=True)(_softmax3)
-    _compute_regime_investment = njit(cache=True)(_compute_regime_investment)
     _simulate_arrays_for_theta = njit(cache=True)(_simulate_arrays_for_theta_python)
 else:
     _simulate_arrays_for_theta = _simulate_arrays_for_theta_python
@@ -393,9 +203,6 @@ def simulate_window_for_theta(window_df, theta, initial_cash, config):
         window_df["drawdown"].to_numpy(dtype=float),
         window_df["predicted_return"].to_numpy(dtype=float),
         window_df["volatility_20d"].to_numpy(dtype=float),
-        window_df["regime_trend"].to_numpy(dtype=float),
-        window_df["regime_acceleration"].to_numpy(dtype=float),
-        window_df["short_drawdown"].to_numpy(dtype=float),
     )
 
 
@@ -541,24 +348,14 @@ def build_strategy_chart(result_df):
     }
 
 
-def run_simulation(
-    ticker,
-    start_date,
-    end_date,
-    total_cash,
-    data_dir="datasets",
-    aggressiveness=None,
-):
+def run_simulation(ticker, start_date, end_date, total_cash, data_dir="datasets"):
     config = DEFAULT_CONFIG.copy()
     config["initial_cash"] = float(total_cash)
-    if aggressiveness is not None:
-        config["aggressiveness"] = float(aggressiveness)
     ticker = ticker.upper().strip()
 
     dataset_path = find_or_build_dataset(ticker, data_dir)
     df = pd.read_csv(dataset_path, index_col=0, parse_dates=True)
     feature_df = df.dropna(subset=FEATURES).copy()
-    feature_df = add_regime_features(feature_df, config)
 
     if feature_df.empty:
         raise ValueError("Dataset has no usable feature rows.")
@@ -588,7 +385,7 @@ def run_simulation(
     tool_cash = float(total_cash)
     tool_shares = 0.0
     tool_rows = []
-    theta = np.zeros(len(BOUNDS), dtype=float)
+    theta = np.array([0.0, 0.0, 0.0, 0.0])
     theta_refresh_days = max(1, int(config["theta_refresh_days"]))
 
     prediction_rows = []
@@ -622,7 +419,7 @@ def run_simulation(
                 "signal_date": signal_date.strftime("%Y-%m-%d"),
                 "model_signal_date": model_signal_date.strftime("%Y-%m-%d"),
                 "predicted_future_price": predicted_future_price,
-                "actual_future_price": price,
+                "actual_future_price": signal_row["actual_future_price"],
             }
         )
 
@@ -637,40 +434,20 @@ def run_simulation(
                     theta_history_df["predicted_return"] = model.predict(theta_history_df[FEATURES])
                     theta = solve_theta_for_day(theta_history_df, float(total_cash), config)
                 else:
-                    theta = np.zeros(len(BOUNDS), dtype=float)
+                    theta = np.array([0.0, 0.0, 0.0, 0.0])
 
-            (
-                tool_invest,
-                base_invest,
-                investment_multiplier,
-                weight_bull,
-                weight_bear,
-                weight_side,
-                signal_bull,
-                signal_bear,
-                signal_side,
-                cash_signal,
-                market_signal,
-            ) = _compute_regime_investment(
-                theta,
+            g0, a, b, c = theta
+            daily_fraction = (
+                g0
+                + a * float(signal_row["drawdown"])
+                + b * predicted_return
+                - c * float(signal_row["volatility_20d"])
+            )
+            daily_fraction = max(0.0, daily_fraction)
+            daily_fraction = min(daily_fraction, config["max_daily_fraction"])
+            tool_invest = min(
+                max(tool_cash * daily_fraction, config["min_daily_investment"]),
                 tool_cash,
-                float(total_cash),
-                price,
-                day_index,
-                len(sim_df),
-                config["max_daily_fraction"],
-                config["min_daily_investment"],
-                config["aggressiveness"],
-                config["cash_aggressiveness"],
-                config["regime_temperature"],
-                config["drawdown_power"],
-                config["min_base_fraction"],
-                float(signal_row["drawdown"]),
-                predicted_return,
-                float(signal_row["volatility_20d"]),
-                float(signal_row["regime_trend"]),
-                float(signal_row["regime_acceleration"]),
-                float(signal_row["short_drawdown"]),
             )
 
         tool_shares += tool_invest / price if price > 0 else 0.0
@@ -690,16 +467,6 @@ def run_simulation(
                 "close": price,
                 "signal_close": float(signal_row["close"]),
                 "predicted_return": predicted_return,
-                "base_investment": base_invest if tool_cash > 0 else 0.0,
-                "investment_multiplier": investment_multiplier if tool_cash > 0 else 0.0,
-                "weight_bull": weight_bull if tool_cash > 0 else 0.0,
-                "weight_bear": weight_bear if tool_cash > 0 else 0.0,
-                "weight_side": weight_side if tool_cash > 0 else 0.0,
-                "signal_bull": signal_bull if tool_cash > 0 else 0.0,
-                "signal_bear": signal_bear if tool_cash > 0 else 0.0,
-                "signal_side": signal_side if tool_cash > 0 else 0.0,
-                "cash_signal": cash_signal if tool_cash > 0 else 0.0,
-                "market_signal": market_signal if tool_cash > 0 else 0.0,
                 "tool_daily_investment": tool_invest,
                 "tool_cash": tool_cash,
                 "tool_shares": tool_shares,
