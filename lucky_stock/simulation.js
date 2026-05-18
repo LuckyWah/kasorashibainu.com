@@ -121,6 +121,44 @@
     error.hidden = false;
   }
 
+  function formatSimulationError(message) {
+    const text = String(message || "");
+
+    if (/not enough usable training rows/i.test(text)) {
+      return "This stock is new and does not have sufficient historical data. Please pick another one.";
+    }
+
+    if (/no yahoo finance data found|no close price found/i.test(text)) {
+      return "We could not find market data for that ticker. Please check the symbol or pick another stock.";
+    }
+
+    if (/not enough usable data|dataset has no usable feature rows/i.test(text)) {
+      return "This stock does not have enough clean historical market data for a simulation. Please pick another one.";
+    }
+
+    if (/start date is after the available market data/i.test(text)) {
+      return "The start date is later than the available market data for this stock. Please choose an earlier start date.";
+    }
+
+    if (/no market rows found/i.test(text)) {
+      return "No trading data was found for that date range. Please choose a different period.";
+    }
+
+    if (/simulation period must include at least 20 trading days/i.test(text)) {
+      return "Please choose a longer date range. The simulation needs at least 20 trading days.";
+    }
+
+    if (/simulation api request failed/i.test(text)) {
+      return "The simulation service could not complete the request. Please try again in a moment.";
+    }
+
+    if (/simulation api did not return json|proxied to the backend server/i.test(text)) {
+      return "The simulation service is temporarily unavailable. Please try again later.";
+    }
+
+    return text;
+  }
+
   function clearResults() {
     error.hidden = true;
     error.textContent = "";
@@ -251,9 +289,9 @@
       });
     } catch (err) {
       if (err.name === "AbortError") {
-        showError("Simulation timed out after 15 minutes. Try a shorter period or restart the backend with a longer proxy/server timeout.");
+        showError("The simulation took too long to finish. Please try a shorter date range or try again later.");
       } else {
-        showError(err.message || "Simulation failed.");
+        showError(formatSimulationError(err.message || "Simulation failed."));
       }
     } finally {
       window.clearTimeout(timeoutId);

@@ -57,6 +57,7 @@ DEFAULT_CONFIG = {
     "n_estimators": 100,
     "max_depth": 8,
     "min_samples_leaf": 5,
+    "min_training_rows": 30,
     "random_state": 42,
 
     # Differential evolution speed settings.
@@ -232,8 +233,12 @@ def train_prediction_model(feature_df, config):
     )
     training_df = training_df.dropna(subset=[target]).copy()
 
-    if len(training_df) < 80:
-        raise ValueError("Not enough usable training rows for this ticker/date range.")
+    min_training_rows = int(config.get("min_training_rows", 30))
+    if len(training_df) < min_training_rows:
+        raise ValueError(
+            f"Not enough usable training rows for this ticker/date range. "
+            f"Need at least {min_training_rows}, found {len(training_df)}."
+        )
 
     X = training_df[FEATURES]
     y = training_df[target]
