@@ -683,6 +683,51 @@ main {
   color: var(--primary);
 }
 
+/* Release Log */
+.release-log {
+  padding: 80px clamp(20px, 5vw, 40px);
+  border-top: 1px solid var(--border);
+  background: rgba(0, 217, 255, 0.03);
+}
+
+.release-timeline {
+  display: grid;
+  gap: 0;
+  max-width: 860px;
+  margin: 0 auto;
+  border-top: 1px solid var(--border);
+}
+
+.release-entry {
+  display: grid;
+  grid-template-columns: minmax(170px, 0.28fr) 1fr;
+  gap: 18px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.release-meta {
+  display: grid;
+  gap: 6px;
+  align-content: start;
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.release-meta span {
+  color: var(--primary);
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.release-entry p {
+  margin: 0;
+  color: var(--text-secondary);
+  line-height: 1.65;
+}
+
 /* Download Section */
 .download {
   padding: 80px clamp(20px, 5vw, 40px);
@@ -778,6 +823,7 @@ main {
   .simulation,
   .simulation-promo,
   .for-whom,
+  .release-log,
   .download {
     padding: 60px 16px;
   }
@@ -786,6 +832,7 @@ main {
   .how-it-works h2,
   .section-heading h2,
   .for-whom h2,
+  .release-log h2,
   .download h2 {
     font-size: 1.8rem;
     margin-bottom: 40px;
@@ -820,6 +867,12 @@ main {
 
   .simulation-chart {
     min-height: 360px;
+  }
+
+  .release-entry {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    padding: 16px 0;
   }
 }
 
