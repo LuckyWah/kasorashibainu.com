@@ -41,13 +41,10 @@ BOUNDS = [
 ]
 
 SELL_BOUNDS = [
-    (0.0000, 0.0300),
-    (0.0000, 0.0600),
-    (0.0000, 0.0600),
-    (0.0000, 8.0000),
-    (0.0000, 0.0800),
-    (0.0000, 0.0600),
-    (0.0000, 0.0600),
+    (0.0000, 0.0100),
+    (0.0000, 0.0500),
+    (0.0000, 0.3000),
+    (0.0000, 0.0100),
 ]
 
 DEFAULT_CONFIG = {
@@ -78,6 +75,7 @@ DEFAULT_CONFIG = {
     "max_daily_sell_fraction": 0.03,
     "min_daily_sell_shares": 0.0,
     "sell_min_near_high_score": 0.70,
+    "sell_new_high_scale": 0.15,
     "sell_min_runup_score": 0.03,
     "sell_min_weakening_score": 0.01,
     "sell_min_overextension_score": 0.0,
@@ -87,12 +85,10 @@ DEFAULT_CONFIG = {
     "sell_runup_scale": 0.20,
     "sell_weakening_scale": 0.10,
     "sell_downside_scale": 0.03,
-    "sell_volatility_scale": 0.80,
-    "sell_min_strength": 0.15,
-    "sell_strength_power": 1.35,
     "sell_strength": 1.0,
     "sell_day_penalty": 0.0005,
     "sell_positive_next_day_penalty": 0.25,
+    "sell_share_retention_penalty": 0.05,
 }
 
 
@@ -270,11 +266,21 @@ def solve_theta_for_day(history_df, initial_cash, config, workers=None):
     return result.x
 
 
-def build_signal_sell_row(feature_df, signal_date, predicted_return):
+def _safe_float(value, default=0.0):
+    try:
+        value = float(value)
+    except (TypeError, ValueError):
+        return float(default)
+    if not np.isfinite(value):
+        return float(default)
+    return float(value)
+
+
+def build_signal_sell_row(feature_df, signal_date, predicted_return, config):
     signal_context = feature_df.loc[feature_df.index <= signal_date].tail(80).copy()
     signal_context["predicted_return"] = 0.0
     signal_context.loc[signal_date, "predicted_return"] = predicted_return
-    signal_sell_df = add_sell_signals(signal_context)
+    signal_sell_df = add_inverse_sell_scores(signal_context, config)
 
     if not signal_sell_df.empty and signal_date in signal_sell_df.index:
         return signal_sell_df.loc[signal_date]
@@ -287,6 +293,12 @@ def build_signal_sell_row(feature_df, signal_date, predicted_return):
         "runup_score",
         "momentum_weakening_score",
         "drawdown_score",
+        "new_high_score",
+        "predicted_downside_score",
+        "peak_score",
+        "peak_near_high_component",
+        "peak_runup_component",
+        "peak_overextension_component",
     ):
         signal_row[column] = 0.0
     return signal_row
@@ -299,9 +311,7 @@ def compute_sell_state(cash, shares, price):
 
 
 def _clip01(value):
-    if not np.isfinite(value):
-        return 0.0
-    return float(np.clip(value, 0.0, 1.0))
+    return float(np.clip(_safe_float(value, 0.0), 0.0, 1.0))
 
 
 def add_sell_signals(df):
@@ -329,12 +339,65 @@ def add_sell_signals(df):
     return signal_df
 
 
+def add_inverse_sell_scores(feature_df, config):
+    sell_df = add_sell_signals(feature_df).copy()
+    if sell_df.empty:
+        return sell_df
+
+    close = sell_df["close"].astype(float)
+    prior_high = close.rolling(60, min_periods=5).max().shift(1).replace(0, np.nan)
+
+    runup_scale = max(_safe_float(config.get("sell_runup_scale", 0.20), 0.20), 1e-9)
+    overextension_scale = max(
+        _safe_float(config.get("sell_overextension_scale", 0.08), 0.08),
+        1e-9,
+    )
+    new_high_scale = max(_safe_float(config.get("sell_new_high_scale", 0.15), 0.15), 1e-9)
+    downside_scale = max(_safe_float(config.get("sell_downside_scale", 0.03), 0.03), 1e-9)
+    min_near_high = _safe_float(config.get("sell_min_near_high_score", 0.70), 0.70)
+
+    sell_df["peak_near_high_component"] = sell_df["near_high_score"].apply(_clip01)
+    sell_df["peak_runup_component"] = (
+        sell_df["runup_score"].astype(float) / runup_scale
+    ).clip(lower=0.0, upper=1.0)
+    sell_df["peak_overextension_component"] = (
+        sell_df["overextension_score"].astype(float) / overextension_scale
+    ).clip(lower=0.0, upper=1.0)
+    sell_df["new_high_score"] = ((close / prior_high - 1.0) / new_high_scale).clip(
+        lower=0.0,
+        upper=1.0,
+    ).fillna(0.0)
+    sell_df["predicted_downside_score"] = (
+        -sell_df["predicted_return"].astype(float) / downside_scale
+    ).clip(lower=0.0, upper=1.0)
+
+    peak_score = (
+        0.35 * sell_df["peak_near_high_component"]
+        + 0.25 * sell_df["peak_runup_component"]
+        + 0.25 * sell_df["peak_overextension_component"]
+        + 0.15 * sell_df["new_high_score"]
+    )
+    peak_score = peak_score.where(sell_df["near_high_score"] >= min_near_high, 0.0)
+    sell_df["peak_score"] = peak_score.clip(lower=0.0, upper=1.0)
+
+    required = [
+        "peak_score",
+        "predicted_downside_score",
+        "new_high_score",
+        "volatility_20d",
+        "predicted_return",
+    ]
+    sell_df[required] = sell_df[required].replace([np.inf, -np.inf], np.nan)
+    return sell_df.dropna(subset=required).copy()
+
+
 def empty_daily_sell(config):
     return {
         "shares_to_sell": 0.0,
         "daily_sell_fraction": 0.0,
         "target_daily_sell_fraction": 0.0,
         "sell_allowed": False,
+        "hold_reason": "no_shares",
         "sell_strength": 0.0,
         "adjusted_sell_strength": 0.0,
         "user_sell_strength": float(config.get("sell_strength", 1.0)),
@@ -345,84 +408,131 @@ def empty_daily_sell(config):
         "overextension_gate": False,
         "prediction_gate": False,
         "strong_climb_gate": False,
+        "peak_score": 0.0,
+        "predicted_downside_score": 0.0,
     }
 
 
 def compute_daily_sell(theta, shares, config, row):
+    """Pure inverse of the buy investment fraction.
+
+    Buy:  g0 + a * drawdown + b * predicted_return - c * volatility
+    Sell: g0 + a * peak_score + b * predicted_downside - c * volatility
+    """
     shares = max(0.0, float(shares))
+    g0, peak_weight, predicted_downside_weight, volatility_weight = theta
+
+    peak_score = _safe_float(row.get("peak_score", 0.0), 0.0)
+    predicted_downside_score = _safe_float(row.get("predicted_downside_score", 0.0), 0.0)
+    volatility_value = _safe_float(row.get("volatility_20d", 0.0), 0.0)
+    predicted_return_value = _safe_float(row.get("predicted_return", 0.0), 0.0)
+
+    runup_score = _safe_float(row.get("runup_score", 0.0), 0.0)
+    overextension_score = _safe_float(row.get("overextension_score", 0.0), 0.0)
+    momentum_weakening_score = _safe_float(row.get("momentum_weakening_score", 0.0), 0.0)
+
+    near_high_gate = peak_score > 0.0
+    runup_gate = runup_score >= _safe_float(config.get("sell_min_runup_score", 0.03), 0.03)
+    weakening_gate = momentum_weakening_score >= _safe_float(
+        config.get("sell_min_weakening_score", 0.01),
+        0.01,
+    )
+    overextension_gate = overextension_score >= _safe_float(
+        config.get("sell_min_overextension_score", 0.0),
+        0.0,
+    )
+    prediction_gate = predicted_return_value <= _safe_float(
+        config.get("sell_max_predicted_return", 0.001),
+        0.001,
+    )
+    strong_climb_gate = predicted_return_value >= _safe_float(
+        config.get("sell_strong_climb_return", 0.003),
+        0.003,
+    )
+
+    user_sell_strength = max(0.0, _safe_float(config.get("sell_strength", 1.0), 1.0))
+    max_fraction = max(0.0, _safe_float(config.get("max_daily_sell_fraction", 0.03), 0.03))
+
     if shares <= 0:
-        return empty_daily_sell(config)
-
-    predicted_return = float(row.get("predicted_return", 0.0))
-    near_high_score = _clip01(float(row.get("near_high_score", 0.0)))
-    runup_score = _clip01(float(row.get("runup_score", 0.0)))
-    weakening_score = _clip01(float(row.get("momentum_weakening_score", 0.0)))
-    overextension_score = _clip01(float(row.get("overextension_score", 0.0)))
-    drawdown_score = _clip01(float(row.get("drawdown_score", 0.0)))
-    volatility = max(0.0, float(row.get("volatility_20d", 0.0)))
-
-    near_high_gate = near_high_score >= float(config.get("sell_min_near_high_score", 0.70))
-    runup_gate = runup_score >= float(config.get("sell_min_runup_score", 0.03))
-    weakening_gate = weakening_score >= float(config.get("sell_min_weakening_score", 0.01))
-    overextension_gate = overextension_score >= float(config.get("sell_min_overextension_score", 0.0))
-    prediction_gate = predicted_return <= float(config.get("sell_max_predicted_return", 0.001))
-    strong_climb_gate = predicted_return >= float(config.get("sell_strong_climb_return", 0.003))
-    sell_allowed = (
-        near_high_gate
-        and overextension_gate
-        and prediction_gate
-        and (runup_gate or weakening_gate or strong_climb_gate)
-    )
-
-    g0, near_high_w, runup_w, predicted_w, volatility_w, weakening_w, drawdown_w = theta
-    raw_strength = (
-        float(g0)
-        + float(near_high_w) * near_high_score
-        + float(runup_w) * runup_score
-        + float(predicted_w) * max(0.0, -predicted_return)
-        + float(volatility_w) * volatility
-        + float(weakening_w) * weakening_score
-        - float(drawdown_w) * drawdown_score
-    )
-    raw_strength = max(0.0, raw_strength)
-
-    user_strength = max(0.0, float(config.get("sell_strength", 1.0)))
-    sell_strength = raw_strength * user_strength
-    adjusted_sell_strength = sell_strength ** float(config.get("sell_strength_power", 1.35))
-    min_strength = float(config.get("sell_min_strength", 0.15))
-
-    if not sell_allowed or adjusted_sell_strength < min_strength:
-        daily_fraction = 0.0
-    else:
-        daily_fraction = min(
-            adjusted_sell_strength,
-            float(config.get("max_daily_sell_fraction", 0.03)),
+        result = empty_daily_sell(config)
+        result.update(
+            {
+                "shares_remaining": 0.0,
+                "near_high_gate": near_high_gate,
+                "runup_gate": runup_gate,
+                "weakening_gate": weakening_gate,
+                "overextension_gate": overextension_gate,
+                "prediction_gate": prediction_gate,
+                "strong_climb_gate": strong_climb_gate,
+                "user_sell_strength": user_sell_strength,
+                "peak_score": peak_score,
+                "predicted_downside_score": predicted_downside_score,
+            }
         )
+        return result
 
-    min_shares = float(config.get("min_daily_sell_shares", 0.0))
-    shares_to_sell = min(shares, shares * daily_fraction)
-    if 0.0 < shares_to_sell < min_shares:
-        shares_to_sell = min(shares, min_shares)
-        daily_fraction = shares_to_sell / shares if shares > 0 else 0.0
+    if peak_score <= 0.0 or max_fraction <= 0.0:
+        hold_reason = "not_near_high" if peak_score <= 0.0 else "max_sell_fraction_zero"
+        return {
+            "shares_to_sell": 0.0,
+            "daily_sell_fraction": 0.0,
+            "shares_remaining": shares,
+            "target_daily_sell_fraction": 0.0,
+            "sell_allowed": False,
+            "hold_reason": hold_reason,
+            "near_high_gate": near_high_gate,
+            "runup_gate": runup_gate,
+            "weakening_gate": weakening_gate,
+            "overextension_gate": overextension_gate,
+            "prediction_gate": prediction_gate,
+            "strong_climb_gate": strong_climb_gate,
+            "sell_strength": 0.0,
+            "adjusted_sell_strength": 0.0,
+            "user_sell_strength": user_sell_strength,
+            "raw_sell_strength": 0.0,
+            "peak_score": peak_score,
+            "predicted_downside_score": predicted_downside_score,
+        }
+
+    raw_fraction = (
+        float(g0)
+        + float(peak_weight) * peak_score
+        + float(predicted_downside_weight) * predicted_downside_score
+        - float(volatility_weight) * volatility_value
+    )
+    raw_fraction = max(0.0, raw_fraction)
+    target_fraction = min(raw_fraction * user_sell_strength, max_fraction)
+
+    shares_to_sell = min(shares * target_fraction, shares)
+    min_daily_sell_shares = _safe_float(config.get("min_daily_sell_shares", 0.0), 0.0)
+    if 0.0 < shares_to_sell < min_daily_sell_shares:
+        shares_to_sell = min(min_daily_sell_shares, shares)
+
+    actual_fraction = shares_to_sell / shares if shares > 0 else 0.0
+    sell_allowed = shares_to_sell > 0.0
+    hold_reason = "sell_allowed" if sell_allowed else "sell_fraction_zero"
+    sell_strength = target_fraction / max_fraction if max_fraction > 0 else 0.0
+    raw_sell_strength = raw_fraction / max_fraction if max_fraction > 0 else 0.0
 
     return {
         "shares_to_sell": shares_to_sell,
-        "daily_sell_fraction": daily_fraction,
-        "target_daily_sell_fraction": min(
-            adjusted_sell_strength,
-            float(config.get("max_daily_sell_fraction", 0.03)),
-        ),
+        "daily_sell_fraction": actual_fraction,
+        "shares_remaining": shares - shares_to_sell,
+        "target_daily_sell_fraction": target_fraction,
         "sell_allowed": sell_allowed,
-        "sell_strength": sell_strength,
-        "adjusted_sell_strength": adjusted_sell_strength,
-        "user_sell_strength": user_strength,
-        "raw_sell_strength": raw_strength,
+        "hold_reason": hold_reason,
+        "sell_strength": max(0.0, min(1.0, sell_strength)),
+        "adjusted_sell_strength": max(0.0, min(1.0, sell_strength)),
+        "user_sell_strength": user_sell_strength,
+        "raw_sell_strength": max(0.0, raw_sell_strength),
         "near_high_gate": near_high_gate,
         "runup_gate": runup_gate,
         "weakening_gate": weakening_gate,
         "overextension_gate": overextension_gate,
         "prediction_gate": prediction_gate,
         "strong_climb_gate": strong_climb_gate,
+        "peak_score": peak_score,
+        "predicted_downside_score": predicted_downside_score,
     }
 
 
@@ -464,7 +574,9 @@ def simulate_sell_window_for_theta(window_df, theta, initial_shares, config):
     initial_value = initial_shares * first_price
 
     objective = -(terminal_value / initial_value) if initial_value > 0 else -terminal_value
-    return objective + penalty
+    retention_penalty_weight = float(config.get("sell_share_retention_penalty", 0.0))
+    retention_penalty = retention_penalty_weight * (shares / initial_shares) ** 2
+    return objective + penalty + retention_penalty
 
 
 def solve_sell_theta_for_day(history_df, initial_shares, config, workers=None):
@@ -935,7 +1047,7 @@ def run_sell_simulation(
             }
         )
 
-        signal_sell_row = build_signal_sell_row(feature_df, signal_date, predicted_return)
+        signal_sell_row = build_signal_sell_row(feature_df, signal_date, predicted_return, config)
 
         if tool_shares > 0 and day_index % theta_refresh_days == 0:
             theta_history_df = feature_df.loc[feature_df.index < signal_date].tail(
@@ -946,7 +1058,7 @@ def run_sell_simulation(
             theta_status = "insufficient_history"
             if len(theta_history_df) >= 30:
                 theta_history_df["predicted_return"] = model.predict(theta_history_df[FEATURES])
-                theta_history_df = add_sell_signals(theta_history_df)
+                theta_history_df = add_inverse_sell_scores(theta_history_df, config)
                 if len(theta_history_df) >= 30:
                     theta = solve_sell_theta_for_day(theta_history_df, initial_shares, config)
                     theta_status = "optimized"
@@ -963,12 +1075,9 @@ def run_sell_simulation(
                     "status": theta_status,
                     "history_rows": int(theta_source_rows),
                     "theta_g0": float(theta[0]),
-                    "theta_near_high": float(theta[1]),
-                    "theta_runup": float(theta[2]),
-                    "theta_predicted_return": float(theta[3]),
-                    "theta_volatility": float(theta[4]),
-                    "theta_momentum_weakening": float(theta[5]),
-                    "theta_drawdown": float(theta[6]),
+                    "theta_peak_score": float(theta[1]),
+                    "theta_predicted_downside": float(theta[2]),
+                    "theta_volatility": float(theta[3]),
                 }
             )
 
@@ -988,6 +1097,9 @@ def run_sell_simulation(
                 "close": price,
                 "signal_close": float(signal_row["close"]),
                 "predicted_return": predicted_return,
+                "peak_score": float(signal_sell_row.get("peak_score", 0.0)),
+                "predicted_downside_score": float(signal_sell_row.get("predicted_downside_score", 0.0)),
+                "new_high_score": float(signal_sell_row.get("new_high_score", 0.0)),
                 "near_high_score": float(signal_sell_row.get("near_high_score", 0.0)),
                 "overextension_score": float(signal_sell_row.get("overextension_score", 0.0)),
                 "runup_score": float(signal_sell_row.get("runup_score", 0.0)),
@@ -995,12 +1107,9 @@ def run_sell_simulation(
                 "drawdown_score": float(signal_sell_row.get("drawdown_score", 0.0)),
                 "volatility_20d": float(signal_sell_row.get("volatility_20d", 0.0)),
                 "theta_g0": float(theta[0]),
-                "theta_near_high": float(theta[1]),
-                "theta_runup": float(theta[2]),
-                "theta_predicted_return": float(theta[3]),
-                "theta_volatility": float(theta[4]),
-                "theta_momentum_weakening": float(theta[5]),
-                "theta_drawdown": float(theta[6]),
+                "theta_peak_score": float(theta[1]),
+                "theta_predicted_downside": float(theta[2]),
+                "theta_volatility": float(theta[3]),
                 "tool_cash_before_sale": tool_cash_before,
                 "tool_shares_before_sale": tool_shares_before,
                 "tool_daily_shares_sold": tool_daily_shares_sold,
@@ -1008,6 +1117,7 @@ def run_sell_simulation(
                 "tool_daily_sell_fraction": sale["daily_sell_fraction"],
                 "tool_target_daily_sell_fraction": sale["target_daily_sell_fraction"],
                 "tool_sell_allowed": bool(sale["sell_allowed"]),
+                "tool_hold_reason": sale["hold_reason"],
                 "tool_sell_strength": sale["sell_strength"],
                 "tool_adjusted_sell_strength": sale["adjusted_sell_strength"],
                 "tool_user_sell_strength": sale["user_sell_strength"],
@@ -1075,6 +1185,9 @@ def run_sell_simulation(
             "close",
             "signal_close",
             "predicted_return",
+            "peak_score",
+            "predicted_downside_score",
+            "new_high_score",
             "near_high_score",
             "overextension_score",
             "runup_score",
@@ -1087,6 +1200,7 @@ def run_sell_simulation(
             "tool_daily_sell_fraction",
             "tool_target_daily_sell_fraction",
             "tool_sell_allowed",
+            "tool_hold_reason",
             "tool_sell_strength",
             "tool_adjusted_sell_strength",
             "tool_user_sell_strength",
@@ -1101,12 +1215,9 @@ def run_sell_simulation(
             "tool_shares",
             "tool_portfolio_value",
             "theta_g0",
-            "theta_near_high",
-            "theta_runup",
-            "theta_predicted_return",
+            "theta_peak_score",
+            "theta_predicted_downside",
             "theta_volatility",
-            "theta_momentum_weakening",
-            "theta_drawdown",
         ],
     ].copy()
 
