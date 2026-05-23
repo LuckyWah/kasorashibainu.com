@@ -211,6 +211,12 @@
     })}`;
   }
 
+  function formatNumber(value, maximumFractionDigits = 6) {
+    return Number(value).toLocaleString(undefined, {
+      maximumFractionDigits,
+    });
+  }
+
   function formatPercent(value) {
     return `${(Number(value) * 100).toLocaleString(undefined, {
       minimumFractionDigits: 2,
@@ -264,7 +270,7 @@
       ? `${formatCurrency(Math.abs(difference))} more than DCA`
       : `${formatCurrency(Math.abs(difference))} less than DCA`;
 
-    elements.outcome.textContent = `By using Lucky Stock for daily investment in ${data.ticker} from ${formatDisplayDate(data.startDate)} to ${formatDisplayDate(data.endDate)}, your portfolio would grow to ${formatCurrency(data.toolFinalValue)}, which is ${comparisonText}.`;
+    elements.outcome.textContent = `By using Lucky Stock to invest ${formatCurrency(data.toolInvested)} in ${data.ticker} from ${formatDisplayDate(data.startDate)} to ${formatDisplayDate(data.endDate)}, your portfolio would grow to ${formatCurrency(data.toolFinalValue)}, which is ${comparisonText}.`;
     elements.outcome.hidden = false;
 
     const rows = [
@@ -290,7 +296,7 @@
       ? `${formatCurrency(Math.abs(difference))} more than Linear Sell`
       : `${formatCurrency(Math.abs(difference))} less than Linear Sell`;
 
-    elements.outcome.textContent = `By using Lucky Stock to sell shares of ${data.ticker} from ${formatDisplayDate(data.startDate)} to ${formatDisplayDate(data.endDate)}, your sale total would be ${formatCurrency(data.toolFinalValue)}, which is ${comparisonText}.`;
+    elements.outcome.textContent = `By using Lucky Stock to sell ${formatNumber(data.toolSharesSold)} shares of ${data.ticker} from ${formatDisplayDate(data.startDate)} to ${formatDisplayDate(data.endDate)}, your realized cash would be ${formatCurrency(data.toolFinalValue)}, which is ${comparisonText}.`;
     elements.outcome.hidden = false;
 
     const rows = [
