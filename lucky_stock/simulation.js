@@ -302,15 +302,8 @@
       ["Ticker", data.ticker],
       ["Simulation Period", `${formatDisplayDate(data.startDate)} to ${formatDisplayDate(data.endDate)}`],
       ["Trading Days", data.tradingDays],
-      ["Initial Shares", formatNumber(data.initialShares)],
-      ["Start Value", formatCurrency(data.startValue)],
       ["Lucky Stock Final Value", formatCurrency(data.toolFinalValue)],
       ["Linear Sell Final Value", formatCurrency(data.linearSellFinalValue)],
-      ["Cash Realized", formatCurrency(data.toolCashRealized)],
-      ["Shares Sold", formatNumber(data.toolSharesSold)],
-      ["Shares Remaining", formatNumber(data.toolSharesRemaining)],
-      ["Sell Days", data.sellDays],
-      ["Avg Sell Fraction", formatPercent(data.avgSellFractionOnSellDays)],
     ];
 
     elements.summary.innerHTML = rows
