@@ -615,11 +615,11 @@ def build_strategy_chart(result_df):
 
 def build_sell_strategy_chart(result_df):
     metric_options = [
-        ("portfolio_value", "Total Value ($)"),
-        ("cash", "Realized Cash ($)"),
-        ("shares", "Remaining Shares"),
-        ("daily_shares_sold", "Shares Sold"),
+        ("cash", "Sale Total ($)"),
         ("stock_value", "Unsold Share Value ($)"),
+        ("shares", "Remaining Shares"),
+        ("daily_shares_sold", "Daily Shares Sold"),
+        ("portfolio_value", "Total Value ($)"),
     ]
     data = []
 
@@ -659,7 +659,7 @@ def build_sell_strategy_chart(result_df):
             "plot_bgcolor": "#151b2f",
             "font": {"color": "#ffffff"},
             "xaxis": {"title": "Date", "gridcolor": "#2a3347"},
-            "yaxis": {"title": "Total Value ($)", "gridcolor": "#2a3347"},
+            "yaxis": {"title": "Sale Total ($)", "gridcolor": "#2a3347"},
             "legend": {"orientation": "h"},
             "margin": {"l": 56, "r": 24, "t": 24, "b": 48},
         },
@@ -1028,9 +1028,10 @@ def run_sell_simulation(
     if result_df.empty:
         raise ValueError("No usable simulation rows were produced.")
 
+    tool_shares_sold = initial_shares - float(result_df["tool_shares"].iloc[-1])
     linear_shares = initial_shares
     linear_cash = 0.0
-    linear_daily_shares = initial_shares / len(result_df)
+    linear_daily_shares = tool_shares_sold / len(result_df) if tool_shares_sold > 0 else 0.0
     linear_rows = []
 
     for _, row in result_df.iterrows():
@@ -1113,8 +1114,8 @@ def run_sell_simulation(
     )
 
     start_value = initial_shares * float(result_df["close"].iloc[0])
-    tool_final_value = float(result_df["tool_portfolio_value"].iloc[-1])
-    linear_final_value = float(result_df["linear_portfolio_value"].iloc[-1])
+    tool_sale_total = float(result_df["tool_cash"].iloc[-1])
+    linear_sale_total = float(result_df["linear_cash"].iloc[-1])
 
     summary = {
         "ticker": ticker,
@@ -1123,12 +1124,12 @@ def run_sell_simulation(
         "tradingDays": int(len(result_df)),
         "initialShares": round(initial_shares, 6),
         "startValue": round(start_value, 2),
-        "toolFinalValue": round(tool_final_value, 2),
-        "linearSellFinalValue": round(linear_final_value, 2),
-        "toolVsLinearSell": round(tool_final_value - linear_final_value, 2),
-        "toolCashRealized": round(float(result_df["tool_cash"].iloc[-1]), 2),
+        "toolFinalValue": round(tool_sale_total, 2),
+        "linearSellFinalValue": round(linear_sale_total, 2),
+        "toolVsLinearSell": round(tool_sale_total - linear_sale_total, 2),
+        "toolCashRealized": round(tool_sale_total, 2),
         "toolSharesRemaining": round(float(result_df["tool_shares"].iloc[-1]), 6),
-        "toolSharesSold": round(initial_shares - float(result_df["tool_shares"].iloc[-1]), 6),
+        "toolSharesSold": round(tool_shares_sold, 6),
         "sellDays": sell_days,
         "noSellDays": no_sell_days,
         "avgSellFractionOnSellDays": round(avg_sell_fraction, 6),

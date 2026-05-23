@@ -36,11 +36,11 @@
       strategyChartId: "sell-strategy-chart",
       metricId: "sell-strategy-metric",
       metricTitles: [
-        "Total Value ($)",
-        "Realized Cash ($)",
-        "Remaining Shares",
-        "Shares Sold",
+        "Sale Total ($)",
         "Unsold Share Value ($)",
+        "Remaining Shares",
+        "Daily Shares Sold",
+        "Total Value ($)",
       ],
     },
   };
@@ -210,12 +210,6 @@
     })}`;
   }
 
-  function formatNumber(value, maximumFractionDigits = 6) {
-    return Number(value).toLocaleString(undefined, {
-      maximumFractionDigits,
-    });
-  }
-
   function formatPercent(value) {
     return `${(Number(value) * 100).toLocaleString(undefined, {
       minimumFractionDigits: 2,
@@ -295,7 +289,7 @@
       ? `${formatCurrency(Math.abs(difference))} more than Linear Sell`
       : `${formatCurrency(Math.abs(difference))} less than Linear Sell`;
 
-    elements.outcome.textContent = `By using Lucky Stock to sell ${formatNumber(data.initialShares)} shares of ${data.ticker} from ${formatDisplayDate(data.startDate)} to ${formatDisplayDate(data.endDate)}, your final value would be ${formatCurrency(data.toolFinalValue)}, which is ${comparisonText}.`;
+    elements.outcome.textContent = `By using Lucky Stock to sell shares of ${data.ticker} from ${formatDisplayDate(data.startDate)} to ${formatDisplayDate(data.endDate)}, your sale total would be ${formatCurrency(data.toolFinalValue)}, which is ${comparisonText}.`;
     elements.outcome.hidden = false;
 
     const rows = [
