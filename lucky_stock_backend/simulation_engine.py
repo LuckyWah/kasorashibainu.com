@@ -631,12 +631,12 @@ def build_sell_strategy_chart(result_df):
                 {
                     "type": "scatter",
                     "mode": "lines",
-                    "name": "Lucky Sell",
+                    "name": "Lucky Stock",
                     "x": result_df["date"].tolist(),
                     "y": result_df[f"tool_{metric}"].round(4).tolist(),
-                    "line": {"color": "#ff7777", "width": 3},
+                    "line": {"color": "#00d9ff", "width": 3},
                     "visible": True if visible else False,
-                    "legendgroup": "Lucky Sell",
+                    "legendgroup": "Lucky Stock",
                     "showlegend": visible,
                 },
                 {
