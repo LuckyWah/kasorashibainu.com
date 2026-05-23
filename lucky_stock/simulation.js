@@ -38,8 +38,9 @@
       metricTitles: [
         "Sale Total ($)",
         "Unsold Share Value ($)",
-        "Remaining Shares",
+        "Average Sold Price ($)",
         "Daily Shares Sold",
+        "Remaining Shares",
         "Total Value ($)",
       ],
     },
@@ -296,8 +297,8 @@
       ["Ticker", data.ticker],
       ["Simulation Period", `${formatDisplayDate(data.startDate)} to ${formatDisplayDate(data.endDate)}`],
       ["Trading Days", data.tradingDays],
-      ["Lucky Stock Final Value", formatCurrency(data.toolFinalValue)],
-      ["Linear Sell Final Value", formatCurrency(data.linearSellFinalValue)],
+      ["Lucky Stock Realized Cash", formatCurrency(data.toolFinalValue)],
+      ["Linear Sell Realized Cash", formatCurrency(data.linearSellFinalValue)],
     ];
 
     elements.summary.innerHTML = rows

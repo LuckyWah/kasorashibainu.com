@@ -617,8 +617,9 @@ def build_sell_strategy_chart(result_df):
     metric_options = [
         ("cash", "Sale Total ($)"),
         ("stock_value", "Unsold Share Value ($)"),
-        ("shares", "Remaining Shares"),
+        ("avg_sold_value", "Average Sold Price ($)"),
         ("daily_shares_sold", "Daily Shares Sold"),
+        ("shares", "Remaining Shares"),
         ("portfolio_value", "Total Value ($)"),
     ]
     data = []
@@ -1029,6 +1030,9 @@ def run_sell_simulation(
         raise ValueError("No usable simulation rows were produced.")
 
     tool_shares_sold = initial_shares - float(result_df["tool_shares"].iloc[-1])
+    result_df["tool_avg_sold_value"] = (
+        result_df["tool_cash"] / (initial_shares - result_df["tool_shares"])
+    ).replace([np.inf, -np.inf], 0.0).fillna(0.0)
     linear_shares = initial_shares
     linear_cash = 0.0
     linear_daily_shares = tool_shares_sold / len(result_df) if tool_shares_sold > 0 else 0.0
@@ -1044,11 +1048,15 @@ def run_sell_simulation(
             linear_shares,
             price,
         )
+        linear_shares_sold = initial_shares - linear_shares
         linear_rows.append(
             {
                 "linear_daily_shares_sold": linear_sell,
                 "linear_cash": linear_cash,
                 "linear_shares": linear_shares,
+                "linear_avg_sold_value": (
+                    linear_cash / linear_shares_sold if linear_shares_sold > 0 else 0.0
+                ),
                 "linear_stock_value": linear_stock_value,
                 "linear_portfolio_value": linear_portfolio_value,
             }
