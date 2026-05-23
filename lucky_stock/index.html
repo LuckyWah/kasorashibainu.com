@@ -123,12 +123,12 @@
 
         <details class="qa-card">
           <summary>How does the software use machine learning?</summary>
-          <p>The model trains on past stock price behavior, including how far the stock has fallen from recent highs, whether it has been rising or falling over the last few weeks, how today's price compares with its recent typical price, how large the daily price swings have been, and whether trading activity is unusually high or low. It also uses broader market conditions, including whether the overall market is calm or fearful, whether borrowing costs are rising, and whether inflation pressure is high. The model uses these signals to estimate whether the next short-term move looks favorable, then the investment algorithm uses that estimate to decide how much cash to invest each day.</p>
+          <p>The model trains on past stock price behavior, including how far the stock has fallen from recent highs, whether it has been rising or falling over the last few weeks, how today's price compares with its recent typical price, how large the daily price swings have been, and whether trading activity is unusually high or low. It also uses broader market conditions, including whether the overall market is calm or fearful, whether borrowing costs are rising, and whether inflation pressure is high. The model uses these signals to estimate whether the next short-term move looks favorable, then the investment algorithm uses that estimate to decide how much cash to invest or how many shares to sell each day.</p>
         </details>
 
         <details class="qa-card">
           <summary>How does the buying and selling algorithm work?</summary>
-          <p>The buying strategy increases investment when the price is down and the model sees a favorable expected return. It buys less aggressively when the stock has already risen quickly or when the current price is high compared with where the stock has traded over the last few weeks. The selling strategy looks for stronger price areas, such as prices near recent highs, recent runups, and signs of possible downside, then sells gradually instead of liquidating all shares at once. The tool caps daily buying and selling so cash and shares are not used too quickly.</p>
+          <p>The buying strategy increases investment when the price is down and the model sees a favorable expected return. It buys less aggressively when the stock has already risen quickly or when the current price is high compared with where the stock has traded over the last few weeks. The selling strategy looks for favorable selling conditions, such as prices near recent highs, recent runups, and signs of imminent downside, then controls selling based on those signals. The tool caps daily buying and selling to prevent cash from being spent or shares from being sold too quickly.</p>
         </details>
 
         <details class="qa-card">
@@ -143,7 +143,7 @@
 
         <details class="qa-card">
           <summary>What main advantage does the tool have over human investors?</summary>
-          <p>Lucky Stock removes emotion from the daily buying decision. When a stock drops sharply, human investors often panic, stop buying because they are afraid of further losses, or wait for a perfect bottom that may never be obvious. The tool follows a rule-based calculation instead: it can keep buying during the decline when the data supports it, reduce daily investment when prices have already gone up.</p>
+          <p>Lucky Stock removes emotion from the daily buying and selling decisions. When a stock drops sharply, human investors often panic, stop buying because they are afraid of further losses, or wait for a perfect bottom that may never be obvious. The tool follows a rule-based calculation instead: it can keep buying during the decline when the data supports it, reduce daily investment when prices have already gone up.</p>
         </details>
 
         <details class="qa-card">
@@ -152,8 +152,8 @@
         </details>
 
         <details class="qa-card">
-          <summary>Does Lucky Stock guarantee outperformance over DCA?</summary>
-          <p>No, Lucky Stock does not guarantee better returns than DCA. It can underperform DCA when prices rise steadily without many major dips, such as during a strong bull market. Because the tool is designed to save more cash for a bear market and reduce buying after prices have already moved up, it may invest more slowly while DCA keeps buying on a fixed rate. In that situation, DCA can perform better because it gets more money invested earlier in the uptrend.</p>
+          <summary>Does Lucky Stock guarantee outperformance over DCA or average selling?</summary>
+          <p>No, Lucky Stock does not guarantee better returns than DCA or average selling. It can underperform DCA when prices rise steadily without many major dips, such as during a strong bull market. Because the tool is designed to save more cash for a bear market and reduce buying after prices have already moved up, it may invest more slowly while DCA keeps buying on a fixed rate. In that situation, DCA can perform better because it gets more money invested earlier in the uptrend. It can also underperform average selling when the stock keeps rallying without a major decline.</p>
         </details>
       </div>
     </section>
@@ -279,9 +279,9 @@
         <p>Lucky Stock is built for investors who:</p>
         <ul>
           <li>Select stocks based on a strategic long-term investment thesis</li>
-          <li>Invest with discipline instead of trying to time the market perfectly</li>
-          <li>Believe in long-term wealth building by heavily investing during bear markets</li>
-          <li>Need a simple tool for daily investment suggestions that generally outperforms DCA</li>
+          <li>Buy and sell with discipline instead of trying to time every market move perfectly</li>
+          <li>Believe in long-term wealth building by investing during bear markets and trimming positions near stronger price areas</li>
+          <li>Need a simple tool for daily buy and sell suggestions that can be compared with DCA and average sell</li>
         </ul>
           <p class="note"><strong>Note:</strong> This tool <strong>does not provide financial advice</strong> and is designed primarily for ETFs, which have historically shown stronger long-term recovery potential. It may also be used for individual stocks, but these carry much greater risk as recovery is not guaranteed and thus the tool should be used alongside your own research and financial planning.</p>
         <p class="note"><strong>Disclaimer:</strong> The developer of this tool is not liable for any financial losses incurred through its use. This tool does not guarantee investment growth, and losses are possible. You use this tool at your own risk and assume full responsibility for your investment decisions.</p>
