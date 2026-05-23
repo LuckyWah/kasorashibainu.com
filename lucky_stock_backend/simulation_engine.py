@@ -8,6 +8,7 @@ from scipy.optimize import differential_evolution
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
 
+from compute_investment import SELL_BOUNDS, add_sell_signals, compute_daily_sell
 from data_builder import build_adaptive_dataset
 
 try:
@@ -63,6 +64,26 @@ DEFAULT_CONFIG = {
     # Differential evolution speed settings.
     "optimizer_maxiter": 8,
     "optimizer_popsize": 5,
+
+    # Sell simulation settings. These keep the app sell model and suggestion logic intact.
+    "max_daily_sell_fraction": 0.03,
+    "min_daily_sell_shares": 0.0,
+    "sell_min_near_high_score": 0.70,
+    "sell_min_runup_score": 0.03,
+    "sell_min_weakening_score": 0.01,
+    "sell_min_overextension_score": 0.0,
+    "sell_max_predicted_return": 0.001,
+    "sell_strong_climb_return": 0.003,
+    "sell_overextension_scale": 0.08,
+    "sell_runup_scale": 0.20,
+    "sell_weakening_scale": 0.10,
+    "sell_downside_scale": 0.03,
+    "sell_volatility_scale": 0.80,
+    "sell_min_strength": 0.15,
+    "sell_strength_power": 1.35,
+    "sell_strength": 1.0,
+    "sell_day_penalty": 0.0005,
+    "sell_positive_next_day_penalty": 0.25,
 }
 
 
@@ -95,6 +116,21 @@ class ThetaObjective:
             self.drawdowns,
             self.predicted_returns,
             self.volatilities,
+        )
+
+
+@dataclass(frozen=True)
+class SellThetaObjective:
+    window_df: pd.DataFrame
+    initial_shares: float
+    config: dict
+
+    def __call__(self, theta):
+        return simulate_sell_window_for_theta(
+            self.window_df,
+            theta,
+            self.initial_shares,
+            self.config,
         )
 
 
@@ -214,6 +250,93 @@ def solve_theta_for_day(history_df, initial_cash, config, workers=None):
     result = differential_evolution(
         ThetaObjective(history_df, initial_cash, config),
         bounds=BOUNDS,
+        seed=config["random_state"],
+        polish=False,
+        maxiter=config.get("optimizer_maxiter", 20),
+        popsize=config.get("optimizer_popsize", 8),
+        updating="deferred",
+        workers=workers,
+    )
+
+    return result.x
+
+
+def build_signal_sell_row(feature_df, signal_date, predicted_return):
+    signal_context = feature_df.loc[feature_df.index <= signal_date].tail(80).copy()
+    signal_context["predicted_return"] = 0.0
+    signal_context.loc[signal_date, "predicted_return"] = predicted_return
+    signal_sell_df = add_sell_signals(signal_context)
+
+    if not signal_sell_df.empty and signal_date in signal_sell_df.index:
+        return signal_sell_df.loc[signal_date]
+
+    signal_row = feature_df.loc[signal_date].copy()
+    signal_row["predicted_return"] = predicted_return
+    for column in (
+        "near_high_score",
+        "overextension_score",
+        "runup_score",
+        "momentum_weakening_score",
+        "drawdown_score",
+    ):
+        signal_row[column] = 0.0
+    return signal_row
+
+
+def compute_sell_state(cash, shares, price):
+    stock_value = shares * price
+    portfolio_value = cash + stock_value
+    return stock_value, portfolio_value
+
+
+def simulate_sell_window_for_theta(window_df, theta, initial_shares, config):
+    shares = max(0.0, float(initial_shares))
+    cash = 0.0
+
+    if shares <= 0 or window_df.empty:
+        return 0.0
+
+    first_price = float(window_df["close"].iloc[0])
+    penalty = 0.0
+    prices = window_df["close"].to_numpy(dtype=float)
+    rows = list(window_df.iterrows())
+
+    for row_index, (_, row) in enumerate(rows):
+        price = float(row["close"])
+        if shares <= 0:
+            break
+
+        sale = compute_daily_sell(theta, shares, config, row)
+        shares_to_sell = sale["shares_to_sell"]
+        cash += shares_to_sell * price
+        shares -= shares_to_sell
+
+        if shares_to_sell > 0:
+            penalty += float(config.get("sell_day_penalty", 0.0))
+            if row_index + 1 < len(prices) and price > 0:
+                next_return = prices[row_index + 1] / price - 1.0
+                if next_return > 0:
+                    penalty += (
+                        float(config.get("sell_positive_next_day_penalty", 0.0))
+                        * sale["daily_sell_fraction"]
+                        * next_return
+                    )
+
+    final_price = float(window_df["close"].iloc[-1])
+    terminal_value = cash + shares * final_price
+    initial_value = initial_shares * first_price
+
+    objective = -(terminal_value / initial_value) if initial_value > 0 else -terminal_value
+    return objective + penalty
+
+
+def solve_sell_theta_for_day(history_df, initial_shares, config, workers=None):
+    if workers is None:
+        workers = config["optimizer_workers"]
+
+    result = differential_evolution(
+        SellThetaObjective(history_df, initial_shares, config),
+        bounds=SELL_BOUNDS,
         seed=config["random_state"],
         polish=False,
         maxiter=config.get("optimizer_maxiter", 20),
@@ -347,6 +470,59 @@ def build_strategy_chart(result_df):
             "font": {"color": "#ffffff"},
             "xaxis": {"title": "Date", "gridcolor": "#2a3347"},
             "yaxis": {"title": "Portfolio Value ($)", "gridcolor": "#2a3347"},
+            "legend": {"orientation": "h"},
+            "margin": {"l": 56, "r": 24, "t": 24, "b": 48},
+        },
+    }
+
+
+def build_sell_strategy_chart(result_df):
+    metric_options = [
+        ("portfolio_value", "Total Value ($)"),
+        ("cash", "Realized Cash ($)"),
+        ("shares", "Remaining Shares"),
+        ("daily_shares_sold", "Shares Sold"),
+        ("stock_value", "Unsold Share Value ($)"),
+    ]
+    data = []
+
+    for metric_index, (metric, _) in enumerate(metric_options):
+        visible = metric_index == 0
+        data.extend(
+            [
+                {
+                    "type": "scatter",
+                    "mode": "lines",
+                    "name": "Lucky Sell",
+                    "x": result_df["date"].tolist(),
+                    "y": result_df[f"tool_{metric}"].round(4).tolist(),
+                    "line": {"color": "#ff7777", "width": 3},
+                    "visible": True if visible else False,
+                    "legendgroup": "Lucky Sell",
+                    "showlegend": visible,
+                },
+                {
+                    "type": "scatter",
+                    "mode": "lines",
+                    "name": "Linear Sell",
+                    "x": result_df["date"].tolist(),
+                    "y": result_df[f"linear_{metric}"].round(4).tolist(),
+                    "line": {"color": "#ffd700", "width": 3},
+                    "visible": True if visible else False,
+                    "legendgroup": "Linear Sell",
+                    "showlegend": visible,
+                },
+            ]
+        )
+
+    return {
+        "data": data,
+        "layout": {
+            "paper_bgcolor": "#151b2f",
+            "plot_bgcolor": "#151b2f",
+            "font": {"color": "#ffffff"},
+            "xaxis": {"title": "Date", "gridcolor": "#2a3347"},
+            "yaxis": {"title": "Total Value ($)", "gridcolor": "#2a3347"},
             "legend": {"orientation": "h"},
             "margin": {"l": 56, "r": 24, "t": 24, "b": 48},
         },
@@ -535,4 +711,299 @@ def run_simulation(ticker, start_date, end_date, total_cash, data_dir="datasets"
         "summary": summary,
         "predictionChart": build_prediction_chart(prediction_df, ticker, prediction_days),
         "strategyChart": build_strategy_chart(result_df),
+    }
+
+
+def run_sell_simulation(
+    ticker,
+    start_date,
+    end_date,
+    initial_shares,
+    data_dir="datasets",
+    config_overrides=None,
+):
+    config = DEFAULT_CONFIG.copy()
+    config.update(config_overrides or {})
+    ticker = ticker.upper().strip()
+    initial_shares = float(initial_shares)
+
+    if initial_shares <= 0:
+        raise ValueError("initial_shares must be greater than 0.")
+
+    dataset_path = find_or_build_dataset(ticker, data_dir)
+    df = pd.read_csv(dataset_path, index_col=0, parse_dates=True)
+    feature_df = df.dropna(subset=FEATURES).copy()
+
+    if feature_df.empty:
+        raise ValueError("Dataset has no usable feature rows.")
+
+    prediction_days = int(config["prediction_days"])
+    feature_df["actual_future_price"] = feature_df["close"].shift(-prediction_days)
+
+    start_ts = pd.Timestamp(start_date)
+    if start_ts not in feature_df.index:
+        later_dates = feature_df.index[feature_df.index >= start_ts]
+        if len(later_dates) == 0:
+            raise ValueError("Start date is after the available market data.")
+        start_ts = later_dates[0]
+
+    end_ts = pd.Timestamp(end_date)
+    if end_ts < start_ts:
+        raise ValueError("End date must be after the start date.")
+
+    sim_df = feature_df.loc[start_ts:end_ts].copy()
+
+    if sim_df.empty:
+        raise ValueError("No market rows found for that simulation period.")
+    if len(sim_df) < 20:
+        raise ValueError("Simulation period must include at least 20 trading days.")
+
+    tool_cash = 0.0
+    tool_shares = initial_shares
+    theta = np.zeros(len(SELL_BOUNDS), dtype=float)
+    theta_refresh_days = max(1, int(config["theta_refresh_days"]))
+
+    prediction_rows = []
+    result_rows = []
+    theta_rows = []
+    model = None
+    model_signal_date = None
+    model_refresh_days = max(1, int(config.get("model_refresh_days", 20)))
+
+    for day_index, (current_date, row) in enumerate(sim_df.iterrows()):
+        price = float(row["close"])
+
+        signal_position = feature_df.index.get_loc(current_date) - 1
+        if signal_position < 0:
+            continue
+
+        signal_date = feature_df.index[signal_position]
+        signal_row = feature_df.iloc[signal_position]
+
+        if model is None or day_index % model_refresh_days == 0:
+            model = train_prediction_model_until(feature_df, signal_date, config)
+            model_signal_date = signal_date
+
+        predicted_return = float(model.predict(signal_row[FEATURES].to_frame().T)[0])
+        predicted_future_price = float(signal_row["close"]) * (1.0 + predicted_return)
+
+        prediction_rows.append(
+            {
+                "date": current_date.strftime("%Y-%m-%d"),
+                "signal_date": signal_date.strftime("%Y-%m-%d"),
+                "model_signal_date": model_signal_date.strftime("%Y-%m-%d"),
+                "predicted_future_price": predicted_future_price,
+                "actual_future_price": signal_row["actual_future_price"],
+            }
+        )
+
+        signal_sell_row = build_signal_sell_row(feature_df, signal_date, predicted_return)
+
+        if tool_shares > 0 and day_index % theta_refresh_days == 0:
+            theta_history_df = feature_df.loc[feature_df.index < signal_date].tail(
+                config["rolling_opt_window"]
+            ).copy()
+
+            theta_source_rows = len(theta_history_df)
+            theta_status = "insufficient_history"
+            if len(theta_history_df) >= 30:
+                theta_history_df["predicted_return"] = model.predict(theta_history_df[FEATURES])
+                theta_history_df = add_sell_signals(theta_history_df)
+                if len(theta_history_df) >= 30:
+                    theta = solve_sell_theta_for_day(theta_history_df, initial_shares, config)
+                    theta_status = "optimized"
+                else:
+                    theta = np.zeros(len(SELL_BOUNDS), dtype=float)
+                    theta_status = "insufficient_sell_signals"
+            else:
+                theta = np.zeros(len(SELL_BOUNDS), dtype=float)
+
+            theta_rows.append(
+                {
+                    "date": current_date.strftime("%Y-%m-%d"),
+                    "signal_date": signal_date.strftime("%Y-%m-%d"),
+                    "status": theta_status,
+                    "history_rows": int(theta_source_rows),
+                    "theta_g0": float(theta[0]),
+                    "theta_near_high": float(theta[1]),
+                    "theta_runup": float(theta[2]),
+                    "theta_predicted_return": float(theta[3]),
+                    "theta_volatility": float(theta[4]),
+                    "theta_momentum_weakening": float(theta[5]),
+                    "theta_drawdown": float(theta[6]),
+                }
+            )
+
+        sale = compute_daily_sell(theta, tool_shares, config, signal_sell_row)
+        tool_daily_shares_sold = sale["shares_to_sell"]
+        tool_cash_before = tool_cash
+        tool_shares_before = tool_shares
+        tool_cash += tool_daily_shares_sold * price
+        tool_shares -= tool_daily_shares_sold
+        tool_stock_value, tool_portfolio_value = compute_sell_state(tool_cash, tool_shares, price)
+
+        result_rows.append(
+            {
+                "date": current_date.strftime("%Y-%m-%d"),
+                "signal_date": signal_date.strftime("%Y-%m-%d"),
+                "model_signal_date": model_signal_date.strftime("%Y-%m-%d"),
+                "close": price,
+                "signal_close": float(signal_row["close"]),
+                "predicted_return": predicted_return,
+                "near_high_score": float(signal_sell_row.get("near_high_score", 0.0)),
+                "overextension_score": float(signal_sell_row.get("overextension_score", 0.0)),
+                "runup_score": float(signal_sell_row.get("runup_score", 0.0)),
+                "momentum_weakening_score": float(signal_sell_row.get("momentum_weakening_score", 0.0)),
+                "drawdown_score": float(signal_sell_row.get("drawdown_score", 0.0)),
+                "volatility_20d": float(signal_sell_row.get("volatility_20d", 0.0)),
+                "theta_g0": float(theta[0]),
+                "theta_near_high": float(theta[1]),
+                "theta_runup": float(theta[2]),
+                "theta_predicted_return": float(theta[3]),
+                "theta_volatility": float(theta[4]),
+                "theta_momentum_weakening": float(theta[5]),
+                "theta_drawdown": float(theta[6]),
+                "tool_cash_before_sale": tool_cash_before,
+                "tool_shares_before_sale": tool_shares_before,
+                "tool_daily_shares_sold": tool_daily_shares_sold,
+                "tool_daily_sell_value": tool_daily_shares_sold * price,
+                "tool_daily_sell_fraction": sale["daily_sell_fraction"],
+                "tool_target_daily_sell_fraction": sale["target_daily_sell_fraction"],
+                "tool_sell_allowed": bool(sale["sell_allowed"]),
+                "tool_sell_strength": sale["sell_strength"],
+                "tool_adjusted_sell_strength": sale["adjusted_sell_strength"],
+                "tool_user_sell_strength": sale["user_sell_strength"],
+                "tool_raw_sell_strength": sale["raw_sell_strength"],
+                "tool_near_high_gate": bool(sale["near_high_gate"]),
+                "tool_runup_gate": bool(sale["runup_gate"]),
+                "tool_weakening_gate": bool(sale["weakening_gate"]),
+                "tool_overextension_gate": bool(sale["overextension_gate"]),
+                "tool_prediction_gate": bool(sale["prediction_gate"]),
+                "tool_strong_climb_gate": bool(sale["strong_climb_gate"]),
+                "tool_cash": tool_cash,
+                "tool_shares": tool_shares,
+                "tool_stock_value": tool_stock_value,
+                "tool_portfolio_value": tool_portfolio_value,
+            }
+        )
+
+    result_df = pd.DataFrame(result_rows)
+    if result_df.empty:
+        raise ValueError("No usable simulation rows were produced.")
+
+    linear_shares = initial_shares
+    linear_cash = 0.0
+    linear_daily_shares = initial_shares / len(result_df)
+    linear_rows = []
+
+    for _, row in result_df.iterrows():
+        price = float(row["close"])
+        linear_sell = min(linear_daily_shares, linear_shares)
+        linear_cash += linear_sell * price
+        linear_shares -= linear_sell
+        linear_stock_value, linear_portfolio_value = compute_sell_state(
+            linear_cash,
+            linear_shares,
+            price,
+        )
+        linear_rows.append(
+            {
+                "linear_daily_shares_sold": linear_sell,
+                "linear_cash": linear_cash,
+                "linear_shares": linear_shares,
+                "linear_stock_value": linear_stock_value,
+                "linear_portfolio_value": linear_portfolio_value,
+            }
+        )
+
+    result_df = pd.concat([result_df.reset_index(drop=True), pd.DataFrame(linear_rows)], axis=1)
+    prediction_df = pd.DataFrame(prediction_rows).dropna(
+        subset=["actual_future_price", "predicted_future_price"]
+    )
+    theta_df = pd.DataFrame(theta_rows)
+    sell_history_df = result_df.loc[
+        result_df["tool_daily_shares_sold"] > 0,
+        [
+            "date",
+            "signal_date",
+            "close",
+            "signal_close",
+            "predicted_return",
+            "near_high_score",
+            "overextension_score",
+            "runup_score",
+            "momentum_weakening_score",
+            "drawdown_score",
+            "volatility_20d",
+            "tool_shares_before_sale",
+            "tool_daily_shares_sold",
+            "tool_daily_sell_value",
+            "tool_daily_sell_fraction",
+            "tool_target_daily_sell_fraction",
+            "tool_sell_allowed",
+            "tool_sell_strength",
+            "tool_adjusted_sell_strength",
+            "tool_user_sell_strength",
+            "tool_raw_sell_strength",
+            "tool_near_high_gate",
+            "tool_runup_gate",
+            "tool_weakening_gate",
+            "tool_overextension_gate",
+            "tool_prediction_gate",
+            "tool_strong_climb_gate",
+            "tool_cash",
+            "tool_shares",
+            "tool_portfolio_value",
+            "theta_g0",
+            "theta_near_high",
+            "theta_runup",
+            "theta_predicted_return",
+            "theta_volatility",
+            "theta_momentum_weakening",
+            "theta_drawdown",
+        ],
+    ].copy()
+
+    sell_days = int((result_df["tool_daily_shares_sold"] > 0).sum())
+    no_sell_days = int((result_df["tool_daily_shares_sold"] <= 0).sum())
+    avg_sell_fraction = (
+        float(sell_history_df["tool_daily_sell_fraction"].mean())
+        if not sell_history_df.empty else 0.0
+    )
+    max_sell_fraction = (
+        float(sell_history_df["tool_daily_sell_fraction"].max())
+        if not sell_history_df.empty else 0.0
+    )
+
+    start_value = initial_shares * float(result_df["close"].iloc[0])
+    tool_final_value = float(result_df["tool_portfolio_value"].iloc[-1])
+    linear_final_value = float(result_df["linear_portfolio_value"].iloc[-1])
+
+    summary = {
+        "ticker": ticker,
+        "startDate": result_df["date"].iloc[0],
+        "endDate": result_df["date"].iloc[-1],
+        "tradingDays": int(len(result_df)),
+        "initialShares": round(initial_shares, 6),
+        "startValue": round(start_value, 2),
+        "toolFinalValue": round(tool_final_value, 2),
+        "linearSellFinalValue": round(linear_final_value, 2),
+        "toolVsLinearSell": round(tool_final_value - linear_final_value, 2),
+        "toolCashRealized": round(float(result_df["tool_cash"].iloc[-1]), 2),
+        "toolSharesRemaining": round(float(result_df["tool_shares"].iloc[-1]), 6),
+        "toolSharesSold": round(initial_shares - float(result_df["tool_shares"].iloc[-1]), 6),
+        "sellDays": sell_days,
+        "noSellDays": no_sell_days,
+        "avgSellFractionOnSellDays": round(avg_sell_fraction, 6),
+        "maxSellFraction": round(max_sell_fraction, 6),
+    }
+
+    return {
+        "summary": summary,
+        "predictionChart": build_prediction_chart(prediction_df, ticker, prediction_days),
+        "strategyChart": build_sell_strategy_chart(result_df),
+        "sellHistory": sell_history_df.to_dict("records"),
+        "thetaHistory": theta_df.to_dict("records"),
+        "predictionHistory": prediction_df.to_dict("records"),
+        "rows": result_df.to_dict("records"),
     }

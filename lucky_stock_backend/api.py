@@ -10,7 +10,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
-from simulation_engine import run_simulation
+from simulation_engine import run_sell_simulation, run_simulation
 
 
 DATA_DIR = os.getenv("LUCKY_STOCK_DATA_DIR", "datasets")
@@ -38,19 +38,49 @@ class SimulationRequest(BaseModel):
     totalCash: float = Field(..., ge=100, le=100000000)
 
 
+class SellSimulationRequest(BaseModel):
+    ticker: str = Field(..., min_length=1, max_length=12)
+    startDate: str
+    endDate: str = Field(..., min_length=1)
+    initialShares: float = Field(..., gt=0, le=100000000)
+
+
 @app.get("/api/health")
 def health():
     return {"status": "ok", "cpus": cpu_count}
 
 
-@app.post("/api/simulate")
-def simulate(payload: SimulationRequest):
+def run_buy_endpoint(payload: SimulationRequest):
     try:
         return run_simulation(
             ticker=payload.ticker,
             start_date=payload.startDate,
             end_date=payload.endDate,
             total_cash=payload.totalCash,
+            data_dir=DATA_DIR,
+        )
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.post("/api/simulate-buy")
+def simulate_buy(payload: SimulationRequest):
+    return run_buy_endpoint(payload)
+
+
+@app.post("/api/simulate")
+def simulate(payload: SimulationRequest):
+    return run_buy_endpoint(payload)
+
+
+@app.post("/api/simulate-sell")
+def simulate_sell(payload: SellSimulationRequest):
+    try:
+        return run_sell_simulation(
+            ticker=payload.ticker,
+            start_date=payload.startDate,
+            end_date=payload.endDate,
+            initial_shares=payload.initialShares,
             data_dir=DATA_DIR,
         )
     except Exception as exc:

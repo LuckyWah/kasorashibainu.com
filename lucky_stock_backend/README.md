@@ -30,7 +30,7 @@ Use `--workers 1` because each simulation already consumes the machine. Multiple
 
 ## Long Simulation Timeouts
 
-The frontend waits up to 15 minutes for `/api/simulate`. Uvicorn does not add a normal request-duration timeout, but a reverse proxy in front of it often does.
+The frontend waits up to 15 minutes for `/api/simulate-buy` and `/api/simulate-sell`. Uvicorn does not add a normal request-duration timeout, but a reverse proxy in front of it often does.
 
 For Nginx, set the API proxy timeout to at least 15 minutes:
 
@@ -59,7 +59,7 @@ If the API is on another domain, add this before `simulation.js` in `lucky_stock
 
 ## Endpoint
 
-`POST /api/simulate`
+`POST /api/simulate-buy`
 
 ```json
 {
@@ -67,5 +67,16 @@ If the API is on another domain, add this before `simulation.js` in `lucky_stock
   "startDate": "2024-01-01",
   "endDate": "",
   "totalCash": 1000
+}
+```
+
+`POST /api/simulate-sell`
+
+```json
+{
+  "ticker": "IBM",
+  "startDate": "2024-01-01",
+  "endDate": "",
+  "initialShares": 10
 }
 ```

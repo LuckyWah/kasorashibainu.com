@@ -161,54 +161,113 @@
     <section id="simulation" class="simulation">
       <div class="section-heading">
         <h2>Simulation</h2>
-        <p>Test how Lucky Stock would have performed over a historical period. 
-          Enter a past start date, a past end date, a ticker, and an investment amount to compare the tool's simulated outcome with DCA. 
-          Choose a period with a bear market and recovery. The tool is not designed for bull markets and may underperform DCA during bull markets.</p>
+        <p>Test how Lucky Stock would have performed over a historical period.</p>
       </div>
 
-      <form id="simulation-form" class="simulation-form">
-        <label>
-          <span>Stock Ticker</span>
-          <input name="ticker" type="text" maxlength="12" required>
-        </label>
-        <label>
-          <span>Start Date</span>
-          <input name="startDate" type="date" required>
-        </label>
-        <label>
-          <span>End Date</span>
-          <input name="endDate" type="date" required>
-        </label>
-        <label>
-          <span>Total Cash</span>
-          <input name="totalCash" type="text" inputmode="decimal" required>
-        </label>
-        <button type="submit" class="button button-primary">Run Simulation</button>
-      </form>
+      <div class="simulation-stack">
+        <div class="simulation-tool">
+          <div class="simulation-tool-heading">
+            <h3>Buy Simulation</h3>
+            <p>Compare Lucky Stock's adaptive daily buying with dollar-cost averaging over the same historical period.</p>
+          </div>
 
-      <p id="simulation-status" class="simulation-status" hidden>Simulating...</p>
-      <p id="simulation-error" class="simulation-error" hidden></p>
-      <div id="simulation-results" class="simulation-results" hidden>
-        <p id="simulation-outcome" class="simulation-outcome" hidden></p>
-        <div id="simulation-summary" class="simulation-summary" hidden></div>
-        <div class="simulation-result-section">
-          <h3>Compare ML predictions with actual prices</h3>
-          <div id="prediction-chart" class="simulation-chart"></div>
+          <form id="buy-simulation-form" class="simulation-form" data-simulation-kind="buy">
+            <label>
+              <span>Stock Ticker</span>
+              <input name="ticker" type="text" maxlength="12" required>
+            </label>
+            <label>
+              <span>Start Date</span>
+              <input name="startDate" type="date" required>
+            </label>
+            <label>
+              <span>End Date</span>
+              <input name="endDate" type="date" required>
+            </label>
+            <label>
+              <span>Total Cash</span>
+              <input name="totalCash" type="text" inputmode="decimal" required>
+            </label>
+            <button type="submit" class="button button-primary">Run Buy Simulation</button>
+          </form>
+
+          <p id="buy-simulation-status" class="simulation-status" hidden>Simulating...</p>
+          <p id="buy-simulation-error" class="simulation-error" hidden></p>
+          <div id="buy-simulation-results" class="simulation-results" hidden>
+            <p id="buy-simulation-outcome" class="simulation-outcome" hidden></p>
+            <div id="buy-simulation-summary" class="simulation-summary" hidden></div>
+            <div class="simulation-result-section">
+              <h3>Compare ML predictions with actual prices</h3>
+              <div id="buy-prediction-chart" class="simulation-chart"></div>
+            </div>
+            <div class="simulation-result-section">
+              <h3>Compare DCA with Lucky Stock</h3>
+              <label class="metric-select-label" for="buy-strategy-metric">
+                <span>View</span>
+                <select id="buy-strategy-metric">
+                  <option value="0">Portfolio Value</option>
+                  <option value="1">Stock Value</option>
+                  <option value="2">Average Cost</option>
+                  <option value="3">Daily Investment</option>
+                  <option value="4">Remaining Cash</option>
+                  <option value="5">Return on Invested Capital</option>
+                </select>
+              </label>
+              <div id="buy-strategy-chart" class="simulation-chart"></div>
+            </div>
+          </div>
         </div>
-        <div class="simulation-result-section">
-          <h3>Compare DCA with Lucky Stock</h3>
-          <label class="metric-select-label" for="strategy-metric">
-            <span>View</span>
-            <select id="strategy-metric">
-              <option value="0">Portfolio Value</option>
-              <option value="1">Stock Value</option>
-              <option value="2">Average Cost</option>
-              <option value="3">Daily Investment</option>
-              <option value="4">Remaining Cash</option>
-              <option value="5">Return on Invested Capital</option>
-            </select>
-          </label>
-          <div id="strategy-chart" class="simulation-chart"></div>
+
+        <div class="simulation-tool">
+          <div class="simulation-tool-heading">
+            <h3>Sell Simulation</h3>
+            <p>Compare Lucky Stock's adaptive selling with Linear Sell, which sells an equal share amount on each trading day in the selected period.</p>
+          </div>
+
+          <form id="sell-simulation-form" class="simulation-form" data-simulation-kind="sell">
+            <label>
+              <span>Stock Ticker</span>
+              <input name="ticker" type="text" maxlength="12" required>
+            </label>
+            <label>
+              <span>Start Date</span>
+              <input name="startDate" type="date" required>
+            </label>
+            <label>
+              <span>End Date</span>
+              <input name="endDate" type="date" required>
+            </label>
+            <label>
+              <span>Initial Shares</span>
+              <input name="initialShares" type="text" inputmode="decimal" required>
+            </label>
+            <button type="submit" class="button button-primary">Run Sell Simulation</button>
+          </form>
+
+          <p id="sell-simulation-status" class="simulation-status" hidden>Simulating...</p>
+          <p id="sell-simulation-error" class="simulation-error" hidden></p>
+          <div id="sell-simulation-results" class="simulation-results" hidden>
+            <p id="sell-simulation-outcome" class="simulation-outcome" hidden></p>
+            <div id="sell-simulation-summary" class="simulation-summary" hidden></div>
+            <div class="simulation-result-section">
+              <h3>Compare ML predictions with actual prices</h3>
+              <div id="sell-prediction-chart" class="simulation-chart"></div>
+            </div>
+            <div class="simulation-result-section">
+              <h3>Compare Linear Sell with Lucky Stock</h3>
+              <label class="metric-select-label" for="sell-strategy-metric">
+                <span>View</span>
+                <select id="sell-strategy-metric">
+                  <option value="0">Total Value</option>
+                  <option value="1">Realized Cash</option>
+                  <option value="2">Remaining Shares</option>
+                  <option value="3">Shares Sold</option>
+                  <option value="4">Unsold Share Value</option>
+                </select>
+              </label>
+              <div id="sell-strategy-chart" class="simulation-chart"></div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -249,6 +308,13 @@
           </div>
           <p>Integrated Polygon.io and Alpha Vantage APIs to cover more stocks. Added encryption for users' API keys.</p>
         </article>
+
+        <article class="release-entry">
+          <div class="release-meta">
+            <time datetime="2026-05-22">May 22, 2026</time>
+            <span>Version 1.0.2</span>
+          </div>
+          <p>Added the functionality for selling stocks and its analytics</p>
 
       </div>
     </section>

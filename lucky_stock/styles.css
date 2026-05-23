@@ -456,9 +456,36 @@ main {
   font-size: 1.05rem;
 }
 
+.simulation-stack {
+  display: grid;
+  gap: 44px;
+}
+
+.simulation-tool {
+  min-width: 0;
+}
+
+.simulation-tool-heading {
+  max-width: 780px;
+  margin: 0 0 18px;
+}
+
+.simulation-tool-heading h3 {
+  margin: 0 0 8px;
+  color: var(--primary);
+  font-size: 1.35rem;
+  line-height: 1.3;
+}
+
+.simulation-tool-heading p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.98rem;
+}
+
 .simulation-form {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr)) auto;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) auto;
   gap: 14px;
   align-items: end;
   margin: 0 0 24px;
@@ -477,6 +504,10 @@ main {
   color: var(--text-secondary);
   font-size: 0.9rem;
   font-weight: 700;
+}
+
+.simulation-form label[hidden] {
+  display: none;
 }
 
 .simulation-form input,
