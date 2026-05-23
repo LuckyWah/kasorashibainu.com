@@ -279,8 +279,6 @@
       ["Trading Days", data.tradingDays],
       ["Lucky Stock Final Value", formatCurrency(data.toolFinalValue)],
       ["DCA Final Value", formatCurrency(data.dcaFinalValue)],
-      ["Lucky Stock Invested", formatCurrency(data.toolInvested)],
-      ["DCA Invested", formatCurrency(data.dcaInvested)],
     ];
 
     elements.summary.innerHTML = rows
