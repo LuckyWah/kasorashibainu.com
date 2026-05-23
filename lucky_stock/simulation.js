@@ -291,8 +291,8 @@
   function renderSellSummary(data, elements) {
     const difference = Number(data.toolVsLinearSell);
     const comparisonText = difference >= 0
-      ? `${formatCurrency(Math.abs(difference))} more than Linear Sell`
-      : `${formatCurrency(Math.abs(difference))} less than Linear Sell`;
+      ? `${formatCurrency(Math.abs(difference))} more than linear sell`
+      : `${formatCurrency(Math.abs(difference))} less than linear sell`;
 
     elements.outcome.textContent = `By using Lucky Stock to sell ${formatNumber(data.toolSharesSold)} shares of ${data.ticker} from ${formatDisplayDate(data.startDate)} to ${formatDisplayDate(data.endDate)}, your realized cash would be ${formatCurrency(data.toolFinalValue)}, which is ${comparisonText}.`;
     elements.outcome.hidden = false;
