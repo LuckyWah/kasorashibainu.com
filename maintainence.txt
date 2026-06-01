@@ -7,3 +7,6 @@ requirements.txt \
 simulation_engine.py \
 apis/lucky_stock_backend/
 pm2 restart lucky-stock-backend
+
+# update installer
+mv Lucky_Stock_Installer.exe ~/skeb-sniper-server/downloads
