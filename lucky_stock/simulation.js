@@ -1,7 +1,7 @@
 (function () {
   const apiBase = (window.LUCKY_STOCK_API_BASE || "").replace(/\/$/, "");
   const SIMULATION_TIMEOUT_MS = 15 * 60 * 1000;
-  const MAX_SIMULATION_DAYS = 366;
+  const MAX_SIMULATION_DAYS = 150;
 
   const simulationConfigs = {
     buy: {
@@ -141,7 +141,7 @@
     }
 
     if (days > MAX_SIMULATION_DAYS) {
-      endDateInput.setCustomValidity("Choose a simulation period of 1 year or less.");
+      endDateInput.setCustomValidity("Choose a simulation period of about 100 trading days or less.");
       return false;
     }
 
@@ -175,8 +175,8 @@
       return "Please choose a longer date range. The simulation needs at least 20 trading days.";
     }
 
-    if (/simulation period must be 1 year or less/i.test(text)) {
-      return "Please choose a simulation period of 1 year or less.";
+    if (/simulation period must include (?:60|100) trading days or fewer|simulation period must be 1 year or less/i.test(text)) {
+      return "Please choose a simulation period of 100 trading days or fewer.";
     }
 
     if (/initial_shares must be greater than 0/i.test(text)) {

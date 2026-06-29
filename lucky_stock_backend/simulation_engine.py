@@ -812,6 +812,8 @@ def run_simulation(ticker, start_date, end_date, total_cash, data_dir="datasets"
 
     if len(sim_df) < 20:
         raise ValueError("Simulation period must include at least 20 trading days.")
+    if len(sim_df) > 100:
+        raise ValueError("Simulation period must include 100 trading days or fewer.")
 
     tool_cash = float(total_cash)
     tool_shares = 0.0
@@ -1007,6 +1009,8 @@ def run_sell_simulation(
         raise ValueError("No market rows found for that simulation period.")
     if len(sim_df) < 20:
         raise ValueError("Simulation period must include at least 20 trading days.")
+    if len(sim_df) > 100:
+        raise ValueError("Simulation period must include 100 trading days or fewer.")
 
     tool_cash = 0.0
     tool_shares = initial_shares
