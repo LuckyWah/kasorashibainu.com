@@ -12,7 +12,6 @@
       resultsId: "buy-simulation-results",
       outcomeId: "buy-simulation-outcome",
       summaryId: "buy-simulation-summary",
-      predictionChartId: "buy-prediction-chart",
       strategyChartId: "buy-strategy-chart",
       metricId: "buy-strategy-metric",
       metricTitles: [
@@ -243,7 +242,9 @@
     elements.outcome.textContent = "";
     elements.summary.hidden = true;
     elements.summary.innerHTML = "";
-    elements.predictionChart.innerHTML = "";
+    if (elements.predictionChart) {
+      elements.predictionChart.innerHTML = "";
+    }
     elements.strategyChart.innerHTML = "";
   }
 
@@ -415,10 +416,12 @@
           renderBuySummary(data.summary, elements);
         }
 
-        Plotly.newPlot(elements.predictionChart, data.predictionChart.data, data.predictionChart.layout, {
-          responsive: true,
-          displaylogo: false,
-        });
+        if (elements.predictionChart && data.predictionChart) {
+          Plotly.newPlot(elements.predictionChart, data.predictionChart.data, data.predictionChart.layout, {
+            responsive: true,
+            displaylogo: false,
+          });
+        }
         Plotly.newPlot(elements.strategyChart, data.strategyChart.data, data.strategyChart.layout, {
           responsive: true,
           displaylogo: false,

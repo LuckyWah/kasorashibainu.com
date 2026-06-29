@@ -961,7 +961,6 @@ def run_simulation(ticker, start_date, end_date, total_cash, data_dir="datasets"
 
     return {
         "summary": summary,
-        "predictionChart": build_prediction_chart(prediction_df, ticker, prediction_days),
         "strategyChart": build_strategy_chart(result_df),
     }
 
