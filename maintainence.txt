@@ -4,9 +4,17 @@ mv api.py \
 data_builder.py \
 README.md \
 requirements.txt \
+compute_investment.py \
 simulation_engine.py \
+backtest.py \
 apis/lucky_stock_backend/
 pm2 restart lucky-stock-backend
+
+# flush
+pm2 flush lucky-stock-backend
+
+# log
+pm2 log lucky-stock-backend
 
 # update installer
 mv Lucky_Stock_Installer.exe ~/skeb-sniper-server/downloads

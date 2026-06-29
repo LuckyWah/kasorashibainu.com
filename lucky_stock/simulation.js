@@ -31,7 +31,6 @@
       resultsId: "sell-simulation-results",
       outcomeId: "sell-simulation-outcome",
       summaryId: "sell-simulation-summary",
-      predictionChartId: "sell-prediction-chart",
       strategyChartId: "sell-strategy-chart",
       metricId: "sell-strategy-metric",
       metricTitles: [
