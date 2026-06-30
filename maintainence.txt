@@ -4,7 +4,9 @@ mv api.py \
 data_builder.py \
 README.md \
 requirements.txt \
+prediction_model.py \
 compute_investment.py \
+compute_sell.py \
 simulation_engine.py \
 backtest.py \
 apis/lucky_stock_backend/

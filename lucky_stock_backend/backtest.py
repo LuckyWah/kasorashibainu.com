@@ -1328,6 +1328,7 @@ def run_sell_simulation(
         cash_before = cash
 
         sale = compute_sell_decision(
+            cash=cash,
             shares=shares,
             price=decision_price,
             signals=signal_row,
@@ -1373,6 +1374,15 @@ def run_sell_simulation(
                 "cash_before": float(cash_before),
                 "cash": float(cash),
                 "sell_value": float(sale["sell_value"]),
+                "portfolio_value": float(sale["portfolio_value"]),
+                "current_stock_value": float(sale["current_stock_value"]),
+                "current_stock_weight": float(sale["current_stock_weight"]),
+                "target_stock_weight": float(sale["target_stock_weight"]),
+                "desired_stock_value": float(sale["desired_stock_value"]),
+                "raw_sell_needed": float(sale["raw_sell_needed"]),
+                "max_daily_sell": float(sale["max_daily_sell"]),
+                "base_sell": float(sale["base_sell"]),
+                "sell_limited_by_cap": bool(sale["sell_limited_by_cap"]),
                 "daily_sell_fraction": float(sale["daily_sell_fraction"]),
                 "sell_edge": float(sale["sell_edge"]),
                 "sell_approved": bool(sale["sell_approved"]),
@@ -1486,7 +1496,7 @@ def run_sell_simulation(
             "initialShares": summary["initialShares"],
             "startPrice": round(float(result_df["decision_price"].iloc[0]), 2),
             "endPrice": round(float(result_df["decision_price"].iloc[-1]), 2),
-            "maxDailySellFraction": float(config["max_daily_sell_fraction"]),
+            "maxDailyFraction": float(config["max_daily_fraction"]),
         },
         "performance": {
             "luckyFinalValue": summary["luckyFinalValue"],
