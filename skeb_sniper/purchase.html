@@ -17,12 +17,20 @@
                     Start Commissioning Artists Using Skeb Sniper! 
                     <span id="already-purchased-btn" class="already-purchased-link">Already Purchased?</span>
                 </h2>
-                <p>Choose the plan that fits your needs. Both plans include full access to our software for Windows and Linux! 
+                <p>Skeb Sniper is currently available for free. Enter your email below to receive a license and download links.
                     The newest version is <strong>2.2</strong>.</p>
                 <p class="linux-note"><strong>Note for Linux Users:</strong> Download <a href="setup.sh" download>setup.sh</a> and 
                     <a href="run.sh" download>run.sh</a>. Set up your Docker container by running <code>setup.sh</code>, 
                     then run the application using <code>run.sh</code>.</p>
-                <!-- Plan Selection Section -->
+                <div id="free-license-section">
+                    <div class="coupon-input-group">
+                        <label for="free-license-email" class="coupon-label">Email:</label>
+                        <input type="email" id="free-license-email" class="coupon" placeholder="you@example.com" required>
+                        <button id="get-free-license-btn" class="button apply-coupon">Get Free License</button>
+                    </div>
+                    <p id="free-license-message" class="discount-message"></p>
+                </div>
+                <!-- PayPal plan selection is preserved for a future return to paid access. -->
                 <div class="plan-selection">
                     <div class="pricing-table">
                         <div class="plan-option" data-plan="monthly">

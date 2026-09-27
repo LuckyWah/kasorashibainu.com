@@ -377,6 +377,8 @@ function attachFormHandler() {
 }
 
 // ------------------------------------ Purchase function ------------------------------------
+const FREE_ACCESS_MODE = true;
+
 // Global state for the purchase tab
 const purchaseState = {
     selectedPlan: null, // 'monthly' or 'yearly'
@@ -391,6 +393,30 @@ const purchaseState = {
 function updateDiscountMessage(discountMessage, message, color) {
     discountMessage.innerText = message;
     discountMessage.style.color = color;
+}
+
+async function handleFreeLicense(email) {
+    const message = document.getElementById("free-license-message");
+    updateDiscountMessage(message, "Creating your license...", "gray");
+    try {
+        const response = await fetch('https://download.kasorashibainu.com/api/free-license', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email })
+        });
+        const data = await response.json();
+        if (!response.ok || !data.success) throw new Error(data.message || "Unable to create a free license");
+        purchaseState.downloadLinks = data.downloadLinks;
+        purchaseState.licenseKey = data.license_key;
+        localStorage.setItem("subscriptionCompleted", "true");
+        localStorage.setItem("downloadLinks", JSON.stringify(data.downloadLinks));
+        localStorage.setItem("licenseKey", data.license_key);
+        renderDownloadSection(document.getElementById("download-container"), data.downloadLinks, data.license_key);
+        updateDiscountMessage(message, "Your license is ready.", "green");
+    } catch (error) {
+        console.error("Error creating free license:", error);
+        updateDiscountMessage(message, error.message || "Unable to create a free license.", "red");
+    }
 }
 
 // Function to check if a coupon has been used
@@ -678,6 +704,7 @@ function initializePurchaseTab() {
     const alreadyPurchasedBtn = document.getElementById("already-purchased-btn");
     const purchaseContent = document.querySelector(".purchase-content");
     const showPurchaseSectionLink = document.getElementById("show-purchase-section");
+    const freeLicenseSection = document.getElementById("free-license-section");
 
     // Check if a subscription was already completed
     const subscriptionCompleted = localStorage.getItem("subscriptionCompleted");
@@ -701,6 +728,25 @@ function initializePurchaseTab() {
     document.getElementById("download-container").style.display = "none";
     licenseCheckSection.style.display = "none";
     purchaseContent.style.display = "block";
+    if (FREE_ACCESS_MODE) {
+        document.querySelector(".purchase-content .plan-selection").style.display = "none";
+        freeLicenseSection.style.display = "block";
+        alreadyPurchasedBtn.textContent = "Already have a PayPal license?";
+    } else {
+        freeLicenseSection.style.display = "none";
+    }
+
+    const getFreeLicenseBtn = document.getElementById("get-free-license-btn");
+    if (getFreeLicenseBtn) {
+        getFreeLicenseBtn.addEventListener("click", () => {
+            const email = document.getElementById("free-license-email").value.trim();
+            if (!email) {
+                updateDiscountMessage(document.getElementById("free-license-message"), "Please enter your email.", "red");
+                return;
+            }
+            handleFreeLicense(email);
+        });
+    }
 
     // Add event listener for "Already Purchased?" button
     if (alreadyPurchasedBtn) {
@@ -733,14 +779,19 @@ function initializePurchaseTab() {
             e.preventDefault();
             licenseCheckSection.style.display = "none";
             purchaseContent.style.display = "block";
-            document.getElementById("purchase-button").style.display = purchaseState.selectedPlan ? "block" : "none";
-            document.getElementById("coupon-section").style.display = purchaseState.selectedPlan === 'monthly' ? "block" : "none";
+            document.getElementById("purchase-button").style.display = !FREE_ACCESS_MODE && purchaseState.selectedPlan ? "block" : "none";
+            document.getElementById("coupon-section").style.display = !FREE_ACCESS_MODE && purchaseState.selectedPlan === 'monthly' ? "block" : "none";
             updateDiscountMessage(document.getElementById("discount-message"), "", "black");
         });
     }
 
     function renderSections() {
         const purchaseButtonContainer = document.getElementById("purchase-button");
+        if (FREE_ACCESS_MODE) {
+            couponSection.style.display = "none";
+            purchaseButtonContainer.style.display = "none";
+            return;
+        }
 
         if (purchaseState.selectedPlan === 'monthly') {
             couponSection.style.display = "block";
