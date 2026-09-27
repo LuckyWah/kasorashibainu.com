@@ -412,6 +412,8 @@ async function handleFreeLicense(email) {
         localStorage.setItem("downloadLinks", JSON.stringify(data.downloadLinks));
         localStorage.setItem("licenseKey", data.license_key);
         renderDownloadSection(document.getElementById("download-container"), data.downloadLinks, data.license_key);
+        const freeLicenseSection = document.getElementById("free-license-section");
+        if (freeLicenseSection) freeLicenseSection.style.display = "none";
         updateDiscountMessage(message, "Your license is ready.", "green");
     } catch (error) {
         console.error("Error creating free license:", error);
@@ -713,6 +715,7 @@ function initializePurchaseTab() {
         const licenseKey = localStorage.getItem("licenseKey");
         if (downloadLinks && licenseKey) {
             renderDownloadSection(document.getElementById("download-container"), downloadLinks, licenseKey);
+            if (freeLicenseSection) freeLicenseSection.style.display = "none";
             updateDiscountMessage(
                 document.getElementById("discount-message"),
                 "Subscription already completed. Download below.",
