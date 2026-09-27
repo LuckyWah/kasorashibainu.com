@@ -617,14 +617,14 @@ async function handleCouponClick() {
 }
 
 // Handle license check
-async function handleLicenseCheck(subscriptionId, effectivePlan) {
+async function handleLicenseCheck(subscriptionId, email) {
     try {
         const response = await fetch('https://download.kasorashibainu.com/api/validate-subscription', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
                 subscriptionId: subscriptionId, 
-                plan: effectivePlan || 'monthly',
+                email: email,
                 couponCode: ""
             })
         });
@@ -718,11 +718,12 @@ function initializePurchaseTab() {
     if (checkLicenseBtn) {
         checkLicenseBtn.addEventListener("click", () => {
             const subscriptionId = document.getElementById("subscription-id").value.trim();
-            if (!subscriptionId) {
+            const email = document.getElementById("subscription-email").value.trim();
+            if (!subscriptionId || !email) {
                 updateDiscountMessage(document.getElementById("discount-message"), "Please enter both email and subscription ID.", "red");
                 return;
             }
-            handleLicenseCheck(subscriptionId, purchaseState.effectivePlan);
+            handleLicenseCheck(subscriptionId, email);
         });
     }
 
